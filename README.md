@@ -94,6 +94,71 @@ pnpm run preview
 pnpm run lint
 ```
 
+## 🚀 Deploy Automático (GitHub Actions)
+
+Este projeto usa **GitHub Actions** para deploy automático no **GitHub Pages** a cada push na branch `main`.
+
+### 🔄 Como Funciona
+
+```yaml
+# .github/workflows/deploy.yml
+on:
+  push:
+    branches: [main]  # Dispara a cada push no main
+```
+
+### 📋 Pipeline de Deploy
+
+| Etapa | Ação | Tempo Aprox. |
+|-------|------|--------------|
+| 1️⃣ **Checkout** | Clone do repositório | ~5s |
+| 2️⃣ **Setup Node** | Instala Node.js 20 | ~10s |
+| 3️⃣ **Setup pnpm** | Instala pnpm 10 | ~5s |
+| 4️⃣ **Install** | Instala dependências | ~30s |
+| 5️⃣ **Build** | `pnpm build` (Vite) | ~20s |
+| 6️⃣ **Deploy** | Upload para gh-pages | ~10s |
+
+**⏱️ Tempo total:** ~1-2 minutos
+
+### 🔗 URLs
+
+- **Production:** https://arthr.github.io/term-ooo/
+- **Actions Dashboard:** https://github.com/arthr/term-ooo/actions
+- **Workflow File:** [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+
+### ⚙️ Configuração do Vite
+
+O `vite.config.ts` detecta automaticamente o ambiente:
+
+```typescript
+base: command === 'build' ? '/term-ooo/' : '/'
+```
+
+- **Desenvolvimento local:** `base: '/'` (porta 5175)
+- **GitHub Pages:** `base: '/term-ooo/'` (subpath no domínio)
+
+### ✅ Verificar Status do Deploy
+
+Após fazer push:
+
+1. Acesse: https://github.com/arthr/term-ooo/actions
+2. Clique no commit mais recente
+3. Aguarde o ✅ verde (ou ❌ se houver erro)
+4. Teste no ar: https://arthr.github.io/term-ooo/
+
+### 🔧 Executar Deploy Manualmente
+
+```bash
+# 1. Build local
+pnpm run build
+
+# 2. Preview do build
+pnpm run preview
+
+# 3. Push para main (deploy automático)
+git push origin main
+```
+
 ## 🛠️ Stack Tecnológico
 
 ### Core
