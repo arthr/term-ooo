@@ -13,6 +13,8 @@ interface GameBoardProps {
   shouldShake?: boolean
   onTileClick?: (position: number) => void
   revealingRow?: number // Índice da linha que está sendo revelada (para animação flip)
+  lastTypedIndex?: number // Índice do tile que acabou de receber letra (para animação ontype)
+  happyRow?: number // Índice da linha vitoriosa (para animação happy jump)
 }
 
 export function GameBoard({
@@ -25,6 +27,8 @@ export function GameBoard({
   shouldShake = false,
   onTileClick,
   revealingRow = -1,
+  lastTypedIndex = -1,
+  happyRow = -1,
 }: GameBoardProps) {
   const rows = []
 
@@ -32,9 +36,14 @@ export function GameBoard({
   for (let i = 0; i < board.guesses.length; i++) {
     const guess = board.guesses[i]
     const isRevealing = i === revealingRow
+    const isHappyJump = i === happyRow
     
     rows.push(
-      <div key={i} className="flex gap-1 justify-center">
+      <div 
+        key={i} 
+        className="flex gap-1 justify-center relative"
+        style={{ zIndex: isHappyJump ? 100 : 'auto' }}
+      >
         {guess.tiles.map((tile, j) => (
           <Tile
             key={j}
@@ -43,6 +52,7 @@ export function GameBoard({
             highContrast={highContrast}
             animationDelay={j * 100}
             isFlipping={isRevealing}
+            isHappy={isHappyJump}
           />
         ))}
       </div>
@@ -63,6 +73,7 @@ export function GameBoard({
           highContrast={highContrast}
           isEditing={cursorPosition === i}
           onClick={onTileClick ? () => onTileClick(i) : undefined}
+          isTyping={i === lastTypedIndex && letter !== ''}
         />
       )
     }

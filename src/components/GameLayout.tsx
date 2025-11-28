@@ -9,6 +9,9 @@ interface GameLayoutProps {
   shouldShake?: boolean
   onTileClick?: (position: number) => void
   revealingRow?: number
+  lastTypedIndex?: number
+  happyRow?: number
+  happyBoards?: number[]
 }
 
 export function GameLayout({ 
@@ -17,7 +20,10 @@ export function GameLayout({
   cursorPosition = 0,
   shouldShake = false,
   onTileClick,
-  revealingRow = -1
+  revealingRow = -1,
+  lastTypedIndex = -1,
+  happyRow = -1,
+  happyBoards = []
 }: GameLayoutProps) {
   const { mode, boards, currentGuess, currentRow, maxAttempts } = gameState
 
@@ -34,6 +40,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(0) ? happyRow : -1}
         />
       </div>
     )
@@ -52,6 +60,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(0) ? happyRow : -1}
         />
         <GameBoard
           board={boards[1]}
@@ -63,6 +73,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(1) ? happyRow : -1}
         />
       </div>
     )
@@ -82,6 +94,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(0) ? happyRow : -1}
         />
         <GameBoard
           board={boards[1]}
@@ -93,6 +107,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(1) ? happyRow : -1}
         />
         <GameBoard
           board={boards[2]}
@@ -104,6 +120,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(2) ? happyRow : -1}
         />
         <GameBoard
           board={boards[3]}
@@ -115,6 +133,8 @@ export function GameLayout({
           shouldShake={shouldShake}
           onTileClick={onTileClick}
           revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(3) ? happyRow : -1}
         />
       </div>
     </div>

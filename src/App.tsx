@@ -30,6 +30,9 @@ function Game() {
   const [cursorPosition, setCursorPosition] = useState<number>(0)
   const [shouldShake, setShouldShake] = useState<boolean>(false)
   const [revealingRow, setRevealingRow] = useState<number>(-1)
+  const [lastTypedIndex, setLastTypedIndex] = useState<number>(-1)
+  const [happyRow, setHappyRow] = useState<number>(-1)
+  const [happyBoards, setHappyBoards] = useState<number[]>([])
   
   const [helpOpen, setHelpOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
@@ -200,12 +203,32 @@ function Game() {
           setRevealingRow(-1)
         }, 900)
         
+        // Detectar QUAIS boards foram completados NESTA jogada
+        const newlyCompletedBoardIndices: number[] = []
+        result.newState.boards.forEach((board, idx) => {
+          if (board.isComplete && !gameState.boards[idx].isComplete) {
+            newlyCompletedBoardIndices.push(idx)
+          }
+        })
+        
         setGameState(result.newState)
         storage.saveGameState(mode, gameState.dateKey, result.newState)
         setCursorPosition(0)
         
+        // Se algum board foi completado, ativar animação happy jump
+        if (newlyCompletedBoardIndices.length > 0) {
+          setTimeout(() => {
+            setHappyRow(submittedRow)
+            setHappyBoards(newlyCompletedBoardIndices)
+            setTimeout(() => {
+              setHappyRow(-1)
+              setHappyBoards([])
+            }, 1000)
+          }, 1000) // Após o flip completar
+        }
+        
         if (result.newState.isGameOver) {
-          setTimeout(() => setStatsOpen(true), 1200)
+          setTimeout(() => setStatsOpen(true), newlyCompletedBoardIndices.length > 0 ? 2200 : 1200)
         }
       }
     } else if (key === 'BACKSPACE') {
@@ -258,6 +281,10 @@ function Game() {
       if (/^[A-Z]$/.test(key) && cursorPosition < 5) {
         const newGuess = [...gameState.currentGuess]
         newGuess[cursorPosition] = key.toLowerCase()
+        
+        // Ativar animação de digitação
+        setLastTypedIndex(cursorPosition)
+        setTimeout(() => setLastTypedIndex(-1), 150)
         
         setGameState({
           ...gameState,
@@ -371,6 +398,9 @@ function Game() {
                 shouldShake={shouldShake}
                 onTileClick={handleTileClick}
                 revealingRow={revealingRow}
+                lastTypedIndex={lastTypedIndex}
+                happyRow={happyRow}
+                happyBoards={happyBoards}
               />
           
           <div className="pb-4">

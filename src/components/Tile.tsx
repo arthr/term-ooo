@@ -10,6 +10,8 @@ interface TileProps {
   isEditing?: boolean
   onClick?: () => void
   isFlipping?: boolean
+  isTyping?: boolean
+  isHappy?: boolean
 }
 
 export function Tile({ 
@@ -19,11 +21,13 @@ export function Tile({
   animationDelay = 0,
   isEditing = false,
   onClick,
-  isFlipping = false
+  isFlipping = false,
+  isTyping = false,
+  isHappy = false
 }: TileProps) {
   const stateClasses = {
     empty: 'bg-transparent border-2 border-gray-700',
-    filled: 'bg-transparent border-2 border-gray-500 animate-pop',
+    filled: 'bg-transparent border-2 border-gray-500',
     correct: highContrast
       ? 'bg-orange-500 border-orange-500 text-white'
       : 'bg-green-600 border-green-600 text-white',
@@ -49,10 +53,12 @@ export function Tile({
         !isFlipping && stateClasses[state],
         isEditing && 'border-b-4 !border-b-gray-400',
         onClick && 'cursor-pointer hover:scale-105',
-        isFlipping && 'animate-flip text-white'
+        isFlipping && 'animate-flip text-white',
+        isTyping && 'animate-type',
+        isHappy && 'animate-happy'
       )}
       style={{
-        animationDelay: isFlipping ? `${animationDelay}ms` : undefined,
+        animationDelay: (isFlipping || isHappy) ? `${animationDelay}ms` : undefined,
         '--tile-color': getTileColor(),
       } as React.CSSProperties}
     >
