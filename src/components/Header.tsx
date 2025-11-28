@@ -1,5 +1,5 @@
 // src/components/Header.tsx
-import { HelpCircle, Settings, BarChart3 } from 'lucide-react'
+import { HelpCircle, Settings, BarChart3, Info } from 'lucide-react'
 import { Button } from './ui/button'
 
 interface HeaderProps {
@@ -7,9 +7,10 @@ interface HeaderProps {
   onHelp: () => void
   onStats: () => void
   onSettings: () => void
+  onAbout: () => void
 }
 
-export function Header({ title, onHelp, onStats, onSettings }: HeaderProps) {
+export function Header({ title, onHelp, onStats, onSettings, onAbout }: HeaderProps) {
   return (
     <header className="w-full border-b border-gray-700 bg-gray-900">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -30,6 +31,15 @@ export function Header({ title, onHelp, onStats, onSettings }: HeaderProps) {
         </h1>
         
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onAbout}
+            aria-label="Sobre"
+            className="text-gray-300 hover:text-white"
+          >
+            <Info className="w-6 h-6" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"

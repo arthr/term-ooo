@@ -17,6 +17,7 @@ import { HelpDialog } from './components/HelpDialog'
 import { StatsDialog } from './components/StatsDialog'
 import { SettingsDialog } from './components/SettingsDialog'
 import { DevModeDialog } from './components/DevModeDialog'
+import { AboutDialog } from './components/AboutDialog'
 
 function Game() {
   const navigate = useNavigate()
@@ -38,6 +39,7 @@ function Game() {
   const [statsOpen, setStatsOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [devModeOpen, setDevModeOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
 
   // Determinar modo pela URL
   useEffect(() => {
@@ -314,7 +316,7 @@ function Game() {
   // Teclado físico
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (helpOpen || statsOpen || settingsOpen) return
+      if (helpOpen || statsOpen || settingsOpen || devModeOpen || aboutOpen) return
       
       const key = e.key.toUpperCase()
       
@@ -336,7 +338,7 @@ function Game() {
     
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyPress, helpOpen, statsOpen, settingsOpen])
+  }, [handleKeyPress, helpOpen, statsOpen, settingsOpen, devModeOpen, aboutOpen])
 
   // Konami Code listener (↑ ↑ ↓ ↓ ← → ← → B A)
   useEffect(() => {
@@ -379,6 +381,7 @@ function Game() {
         onHelp={() => setHelpOpen(true)}
         onStats={() => setStatsOpen(true)}
         onSettings={() => setSettingsOpen(true)}
+        onAbout={() => setAboutOpen(true)}
       />
       
       <TopTabs currentMode={mode} onModeChange={handleModeChange} />
@@ -440,6 +443,11 @@ function Game() {
         gameState={gameState}
         onResetLocalStorage={handleResetLocalStorage}
         onSkipToWin={handleSkipToWin}
+      />
+
+      <AboutDialog
+        open={aboutOpen}
+        onOpenChange={setAboutOpen}
       />
     </div>
   )
