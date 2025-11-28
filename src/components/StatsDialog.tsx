@@ -1,5 +1,6 @@
 // src/components/StatsDialog.tsx
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import Countdown from 'react-countdown'
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
 } from './ui/dialog'
 import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
-import { getTimeUntilMidnight } from '@/lib/utils'
 import { getResultMessage, generateShareText } from '@/game/engine'
 import { Share2, Check } from 'lucide-react'
 
@@ -21,16 +21,24 @@ interface StatsDialogProps {
 }
 
 export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialogProps) {
-  const [timeLeft, setTimeLeft] = useState(getTimeUntilMidnight())
   const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft(getTimeUntilMidnight())
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
+  
+  // Calcular timestamp da meia-noite
+  const getMidnightTimestamp = () => {
+    const now = new Date()
+    const midnight = new Date(now)
+    midnight.setHours(24, 0, 0, 0)
+    return midnight.getTime()
+  }
+  
+  // Renderer customizado para o countdown
+  const countdownRenderer = ({ hours, minutes, seconds }: { hours: number; minutes: number; seconds: number }) => {
+    return (
+      <span className="text-lg font-bold font-mono">
+        {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      </span>
+    )
+  }
   
   // Se stats é null, usar valores padrão
   if (!stats) {
@@ -64,6 +72,22 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
             Estatísticas do jogo, distribuição de tentativas e próxima palavra
           </DialogDescription>
         </DialogHeader>
+        
+        {/* Solutions quando jogo terminou */}
+        {gameState.isGameOver && (
+          <div className="w-full bg-green-600 rounded-lg p-3 text-center space-y-1">
+            <div className="text-xs text-green-100 font-medium">
+              {gameState.isWin ? '🎉 Palavra' + (gameState.boards.length > 1 ? 's' : '') : '💀 Era'}
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {gameState.boards.map((board, index) => (
+                <span key={index} className="text-white font-bold text-lg uppercase tracking-wider">
+                  {board.solution}{index < gameState.boards.length - 1 ? ' - ' : ''}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         
         <div className="space-y-4">
           {gameState.isGameOver && (
@@ -131,7 +155,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
               <div className="flex justify-between items-center">
                 <div>
                   <div className="text-xs text-gray-400">Próxima Palavra</div>
-                  <div className="text-lg font-bold font-mono">{timeLeft}</div>
+                  <Countdown date={getMidnightTimestamp()} renderer={countdownRenderer} />
                 </div>
                 <Button
                   onClick={handleShare}
