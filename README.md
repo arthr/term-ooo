@@ -2,6 +2,8 @@
 
 Clone completo e funcional do jogo [Term.ooo](https://term.ooo), desenvolvido com React, TypeScript e Tailwind CSS.
 
+🌐 **[Jogue agora no GitHub Pages!](https://arthr.github.io/term-ooo/)** 🎮
+
 ## 🎮 Sobre o Jogo
 
 Adivinhe a palavra do dia em português! Três modos disponíveis:
@@ -57,7 +59,10 @@ Cada palpite revela dicas sobre as letras:
   - 🎨 Modo de alto contraste (acessibilidade)
   - 📤 Compartilhar resultados (grid de emojis)
   - 📱 Interface responsiva (mobile-first)
-  - Solutions reveladas ao finalizar
+  - 💡 Solutions reveladas ao finalizar
+  - 🔽 Toggle TopTabs (economiza espaço na tela)
+  - ℹ️ AboutDialog com história épica e animações
+  - 🐐 Botão Bodão com áudio (Béééééé!)
 
 ### 🎮 Dev Mode (Easter Egg)
 Pressione o Konami Code: `↑ ↑ ↓ ↓ ← → ← → B A`
@@ -100,6 +105,7 @@ pnpm run lint
 ### UI/Styling
 - **Tailwind CSS 3** - Utility-first CSS
 - **shadcn/ui** - Componentes acessíveis (Radix UI)
+- **Framer Motion** - Animações fluidas e interativas
 - **Lucide React** - Ícones SVG modernos
 - **class-variance-authority** - Variantes de componentes
 - **tailwind-merge** - Merge de classes CSS
@@ -118,25 +124,33 @@ pnpm run lint
 ```
 term-ooo/
 ├── public/                      # Assets estáticos
+│   └── assets/
+│       └── mp3/
+│           └── bodao.mp3       # Áudio do Bodão
 ├── database/                    # Arquivos de referência
 │   └── term.ooo.js             # Código original (para estudo)
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # GitHub Actions CI/CD
 ├── src/
 │   ├── components/             # Componentes React
 │   │   ├── ui/                # shadcn/ui base components
 │   │   │   ├── button.tsx
 │   │   │   ├── dialog.tsx
+│   │   │   ├── scroll-area.tsx
 │   │   │   ├── switch.tsx
 │   │   │   └── tabs.tsx
+│   │   ├── AboutDialog.tsx    # Dialog com história épica
 │   │   ├── DevModeDialog.tsx  # Dialog de ferramentas dev
 │   │   ├── GameBoard.tsx      # Board individual (grid 6x5)
 │   │   ├── GameLayout.tsx     # Layout responsivo dos boards
-│   │   ├── Header.tsx         # Cabeçalho com título e botões
+│   │   ├── Header.tsx         # Cabeçalho com botões e áudio
 │   │   ├── HelpDialog.tsx     # Dialog de instruções
 │   │   ├── Keyboard.tsx       # Teclado virtual com gradientes
 │   │   ├── SettingsDialog.tsx # Dialog de configurações
 │   │   ├── StatsDialog.tsx    # Dialog de estatísticas
 │   │   ├── Tile.tsx           # Tile individual (letra)
-│   │   └── TopTabs.tsx        # Tabs para trocar modo
+│   │   └── TopTabs.tsx        # Tabs com toggle animado
 │   ├── game/                  # Lógica do jogo
 │   │   ├── engine.ts          # Motor do jogo (avaliação, validação)
 │   │   ├── storage.ts         # Interface com localStorage
@@ -155,7 +169,9 @@ term-ooo/
 ├── postcss.config.cjs         # Configuração PostCSS
 ├── tsconfig.json              # Configuração TypeScript (app)
 ├── tsconfig.node.json         # Configuração TypeScript (build)
-├── vite.config.ts             # Configuração Vite
+├── vite.config.ts             # Configuração Vite (base path condicional)
+├── components.json            # Configuração shadcn/ui
+├── pnpm-workspace.yaml        # Workspace do pnpm
 ├── package.json               # Dependências e scripts
 ├── PROMPT.md                  # Especificação original do projeto
 ├── ROADMAP_FEATURES.md        # Features futuras planejadas
@@ -189,7 +205,7 @@ term-ooo/
 
 ## 🎨 Sistema de Animações
 
-Todas as animações foram **extraídas do código original** do Term.ooo:
+### Animações de Tiles (CSS extraídas do original)
 
 | Animação | Trigger | Duração | Efeito |
 |----------|---------|---------|--------|
@@ -197,6 +213,16 @@ Todas as animações foram **extraídas do código original** do Term.ooo:
 | **Flip** | Revelar tiles | 450ms | rotateY 3D (0° → 90° → -90° → 0°) |
 | **Ontype** | Digitar letra | 150ms | translateZ 3D (pop frontal) |
 | **Happy Jump** | Acertar palavra | 600ms | translateY (pulo com curva suave) |
+
+### Animações de UI (Framer Motion)
+
+| Elemento | Animação | Efeito |
+|----------|----------|--------|
+| **Dialogs** | Stagger children | Elementos aparecem sequencialmente |
+| **TopTabs** | Height + Opacity | Desliza para baixo/cima suavemente |
+| **ChevronDown** | Rotate 180° | Gira ao abrir/fechar TopTabs |
+| **Redes Sociais** | Scale + Rotate | Hover com bounce e rotação |
+| **Ícones** | Spring physics | Entrada com física realista |
 
 ## 🗺️ Features Futuras
 
@@ -272,4 +298,15 @@ _Red Bull realmente te dá asas... asas para:_
 
 **Desenvolvido com 💚, muito ☕ e 5 latas de Red Bull**  
 _Enquanto assistia o Orochinho mandando ver no Termo_
+
+---
+
+## 👤 Desenvolvedor
+
+**Arthur Marques** (@arthr)
+
+- 🐙 GitHub: [@arthr](https://github.com/arthr)
+- 💼 LinkedIn: [@arthrmrs](https://linkedin.com/in/arthrmrs)
+- 📸 Instagram: [@arthrmrs](https://instagram.com/arthrmrs)
+- 🐦 X (Twitter): [@arthrmrs](https://x.com/arthrmrs)
 
