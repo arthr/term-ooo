@@ -1,12 +1,14 @@
 // src/game/engine.ts
-import { normalizeString, getDaysSinceStart } from '@/lib/utils'
+import { normalizeString } from '@/lib/utils'
+import { 
+  getDayNumber as getDayNumberFromDates,
+  getDateFromDayNumber as getDateFromDayNumberDates,
+  getDayNumberFromDate as getDayNumberFromDateDates
+} from '@/lib/dates'
 import { GameMode, GameState, Board, Guess, Tile, KeyState, Settings } from './types'
 import { termoSolutions, termoAllowed, accentMap } from './words-termo'
 import { duetoSolutions, duetoAllowed } from './words-dueto'
 import { quartetoSolutions, quartetoAllowed } from './words-quarteto'
-
-// Data inicial do Term.ooo original: 2 de janeiro de 2022
-const START_DATE = new Date('2022-01-02T00:00:00') // 02/jan/2022 como no original
 
 function getWordsForMode(mode: GameMode) {
   switch (mode) {
@@ -55,9 +57,10 @@ export function getDailyWords(mode: GameMode, dayNumber: number): string[] {
   return words
 }
 
-export function getDayNumber(): number {
-  return getDaysSinceStart(START_DATE)
-}
+// Re-exportar funções centralizadas de datas
+export const getDayNumber = getDayNumberFromDates
+export const getDateFromDayNumber = getDateFromDayNumberDates
+export const getDayNumberFromDate = getDayNumberFromDateDates
 
 // Busca palavra com acentos no mapa, se existir
 export function getAccentedWord(normalized: string): string | undefined {
@@ -294,13 +297,14 @@ export function getResultMessage(state: GameState): string {
   return '💀 Tente novamente amanhã!'
 }
 
-export function generateShareText(state: GameState): string {
+export function generateShareText(state: GameState, isArchive: boolean = false): string {
   const { mode, currentRow, maxAttempts, isWin, dayNumber, boards } = state
-
+ 
   const modeText = mode === 'termo' ? 'Termo' : mode === 'dueto' ? 'Dueto' : 'Quarteto'
   const result = isWin ? `${currentRow}/${maxAttempts}` : 'X/' + maxAttempts
-
-  let text = `Modo: ${modeText} - Dia: #${dayNumber} - Tentativas: ${result}\n\n`
+  const archiveTag = isArchive ? ' (Arquivo)' : ''
+ 
+  let text = `Modo: ${modeText} - Dia: #${dayNumber}${archiveTag} - Tentativas: ${result}\n\n`
   let subtitles = `🟩 - Letra correta na posição correta\n🟨 - Letra correta na posição errada\n⬛ - Letra não existe na palavra\n🔳 - Tile não utilizado`
   text += subtitles + '\n\n'
 

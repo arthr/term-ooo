@@ -18,6 +18,7 @@ import { StatsDialog } from './components/StatsDialog'
 import { SettingsDialog } from './components/SettingsDialog'
 import { DevModeDialog } from './components/DevModeDialog'
 import { AboutDialog } from './components/AboutDialog'
+import { ArchiveDialog } from './components/ArchiveDialog'
 
 function Game() {
   const navigate = useNavigate()
@@ -34,17 +35,22 @@ function Game() {
   const [lastTypedIndex, setLastTypedIndex] = useState<number>(-1)
   const [happyRow, setHappyRow] = useState<number>(-1)
   const [happyBoards, setHappyBoards] = useState<number[]>([])
+  const [customDayNumber, setCustomDayNumber] = useState<number | null>(null)
   
   const [helpOpen, setHelpOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [devModeOpen, setDevModeOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
   const [tabsVisible, setTabsVisible] = useState(false)
 
-  // Determinar modo pela URL
+  // Determinar modo pela URL e query params
   useEffect(() => {
     const path = location.pathname
+    const searchParams = new URLSearchParams(location.search)
+    const diaParam = searchParams.get('dia')
+    
     let newMode: GameMode = 'termo'
     
     if (path === '/2' || path === '/dueto') {
@@ -56,16 +62,48 @@ function Game() {
     if (newMode !== mode) {
       setMode(newMode)
     }
-  }, [location.pathname])
+    
+    // Atualizar customDayNumber a partir do query param
+    if (diaParam) {
+      const dayNum = parseInt(diaParam, 10)
+      const currentDay = getDayNumber()
+      
+      if (!isNaN(dayNum) && dayNum > 0) {
+        // 🔒 VALIDAÇÃO: Não permitir dias futuros
+        if (dayNum > currentDay) {
+          // Remove query param e volta para o dia atual
+          const cleanPath = path || '/'
+          navigate(cleanPath, { replace: true })
+          setCustomDayNumber(null)
+        } else {
+          setCustomDayNumber(dayNum)
+        }
+      } else {
+        setCustomDayNumber(null)
+      }
+    } else {
+      setCustomDayNumber(null)
+    }
+  }, [location.pathname, location.search])
 
   // Carregar ou criar estado do jogo
   useEffect(() => {
-    const dateKey = getTodayDateKey()
-    const dayNumber = getDayNumber()
+    const actualDayNumber = customDayNumber || getDayNumber()
+    const isArchive = customDayNumber !== null
+    
+    // Usar dateKey diferente para arquivo
+    const dateKey = isArchive 
+      ? `archive-${actualDayNumber}` 
+      : getTodayDateKey()
     
     const savedState = storage.getGameState(mode, dateKey)
     
-    if (savedState && savedState.dateKey === dateKey) {
+    // Validar se o dayNumber do estado salvo bate com o esperado
+    const isValidState = savedState 
+      && savedState.dateKey === dateKey 
+      && savedState.dayNumber === actualDayNumber  // 🆕 VALIDAÇÃO CRÍTICA!
+    
+    if (isValidState) {
       setGameState(savedState)
       // Encontrar primeira posição vazia no array
       const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
@@ -79,16 +117,17 @@ function Game() {
       // Não abrir stats automaticamente ao carregar
       // Stats só abre após completar uma tentativa
     } else {
-      const newState = createInitialGameState(mode, dayNumber, dateKey)
+      // Recriar o estado se não existir OU se dayNumber não bater
+      const newState = createInitialGameState(mode, actualDayNumber, dateKey)
       setGameState(newState)
       storage.saveGameState(mode, dateKey, newState)
       setCursorPosition(0)
     }
     
-    // IMPORTANTE: Sempre recarregar stats do modo atual
+    // IMPORTANTE: Sempre recarregar stats do modo atual (stats de arquivo não contam)
     const currentModeStats = storage.getStats(mode)
     setStats(currentModeStats)
-  }, [mode])
+  }, [mode, customDayNumber])
 
   // Salvar configurações
   useEffect(() => {
@@ -101,6 +140,11 @@ function Game() {
       // IMPORTANTE: Verificar se o modo do gameState corresponde ao modo atual
       // para evitar salvar stats no modo errado
       if (gameState.mode !== mode) {
+        return
+      }
+      
+      // NÃO atualizar stats se for arquivo
+      if (customDayNumber !== null) {
         return
       }
       
@@ -388,8 +432,11 @@ function Game() {
         onStats={() => setStatsOpen(true)}
         onSettings={() => setSettingsOpen(true)}
         onAbout={() => setAboutOpen(true)}
+        onArchive={() => setArchiveOpen(true)}
         onToggleTabs={() => setTabsVisible(!tabsVisible)}
         tabsVisible={tabsVisible}
+        isArchive={customDayNumber !== null}
+        archiveDayNumber={customDayNumber || undefined}
       />
       
       <TopTabs currentMode={mode} onModeChange={handleModeChange} isVisible={tabsVisible} />
@@ -462,6 +509,12 @@ function Game() {
       <AboutDialog
         open={aboutOpen}
         onOpenChange={setAboutOpen}
+      />
+
+      <ArchiveDialog
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        currentMode={mode}
       />
     </div>
   )
