@@ -54,7 +54,7 @@ console.log(`   ✓ Encontradas ${rfWords.length.toLocaleString()} palavras base
 // ============================================================================
 console.log('📖 Extraindo Yf (mapa de acentuação)...');
 
-const yfMatch = code.match(/Yf = \{([\s\S]*?)\n    \},/);
+const yfMatch = code.match(/Yf = \{([\s\S]*?)\n {4}\},/);
 if (!yfMatch) {
     console.error('❌ Não foi possível encontrar Yf');
     process.exit(1);

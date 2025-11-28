@@ -294,13 +294,14 @@ export function getResultMessage(state: GameState): string {
   return '💀 Tente novamente amanhã!'
 }
 
-export function generateShareText(state: GameState): string {
+export function generateShareText(state: GameState, isArchive: boolean = false): string {
   const { mode, currentRow, maxAttempts, isWin, dayNumber, boards } = state
-
+ 
   const modeText = mode === 'termo' ? 'Termo' : mode === 'dueto' ? 'Dueto' : 'Quarteto'
   const result = isWin ? `${currentRow}/${maxAttempts}` : 'X/' + maxAttempts
-
-  let text = `Modo: ${modeText} - Dia: #${dayNumber} - Tentativas: ${result}\n\n`
+  const archiveTag = isArchive ? ' (Arquivo)' : ''
+ 
+  let text = `Modo: ${modeText} - Dia: #${dayNumber}${archiveTag} - Tentativas: ${result}\n\n`
   let subtitles = `🟩 - Letra correta na posição correta\n🟨 - Letra correta na posição errada\n⬛ - Letra não existe na palavra\n🔳 - Tile não utilizado`
   text += subtitles + '\n\n'
 

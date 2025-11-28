@@ -52,7 +52,9 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
     : 0
 
   const handleShare = async () => {
-    const text = generateShareText(gameState)
+    // Detectar se é arquivo pelo dateKey
+    const isArchive = gameState.dateKey.startsWith('archive-')
+    const text = generateShareText(gameState, isArchive)
     
     try {
       await navigator.clipboard.writeText(text)
