@@ -1,2 +1,2 @@
-onlyBuiltDependencies:
-  - esbuild
+# Este não é um monorepo, então não tem packages
+packages: []
