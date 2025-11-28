@@ -15,7 +15,7 @@ import {
   DialogDescription,
 } from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
-import { Coffee, Zap, Code, Heart, Trophy, Tv, Gamepad2 } from 'lucide-react'
+import { Coffee, Zap, Code, Heart, Trophy, Tv, Gamepad2, Github, Linkedin, Instagram } from 'lucide-react'
 
 interface AboutDialogProps {
   open: boolean
@@ -243,6 +243,69 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
                 <p className="text-2xl text-center font-bold text-green-400 pt-2">
                   Béééééé! 🐐
                 </p>
+              </motion.div>
+
+              {/* Redes Sociais */}
+              <motion.div
+                variants={itemVariants}
+                className="border-t border-gray-700 pt-4"
+              >
+                <p className="text-center text-sm text-gray-400 mb-3">Conecte-se comigo:</p>
+                <div className="flex justify-center items-center gap-4">
+                  <motion.a
+                    href="https://github.com/arthr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors group"
+                  >
+                    <Github className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" />
+                  </motion.a>
+
+                  <motion.a
+                    href="https://linkedin.com/in/arthrmrs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    whileHover={{ scale: 1.15, rotate: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 rounded-lg bg-gray-800 hover:bg-[#0077B5] transition-colors group"
+                  >
+                    <Linkedin className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" />
+                  </motion.a>
+
+                  <motion.a
+                    href="https://instagram.com/arthrmrs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 rounded-lg bg-gray-800 hover:bg-gradient-to-tr hover:from-[#FCAF45] hover:via-[#E1306C] hover:to-[#833AB4] transition-all group"
+                  >
+                    <Instagram className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" />
+                  </motion.a>
+
+                  <motion.a
+                    href="https://x.com/arthrmrs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="X (Twitter)"
+                    whileHover={{ scale: 1.15, rotate: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 rounded-lg bg-gray-800 hover:bg-black transition-colors group"
+                  >
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors fill-current"
+                      aria-hidden="true"
+                    >
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  </motion.a>
+                </div>
               </motion.div>
 
               {/* Footer */}
