@@ -21,28 +21,42 @@ interface ArchiveDialogProps {
 }
 
 // Data inicial do Term.ooo: 2 de janeiro de 2022
-const START_DATE = new Date('2022-01-02T00:00:00')
+const START_DATE = new Date('2022-01-02T00:00:00-03:00') // Timezone São Paulo
 const MAX_DAYS_BACK = 30
 
+// Obter data local (São Paulo) normalizada (00:00:00)
+function getTodayNormalized(): Date {
+  const now = new Date()
+  // Criar data local normalizada
+  const normalized = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  return normalized
+}
+
 function getDayFromDate(date: Date): number {
-  const timeDiff = date.getTime() - START_DATE.getTime()
+  // Normalizar data para comparação
+  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const startNormalized = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate())
+  const timeDiff = normalized.getTime() - startNormalized.getTime()
   return Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1
 }
 
 function getDateFromDay(dayNumber: number): Date {
-  const date = new Date(START_DATE)
+  const startNormalized = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate())
+  const date = new Date(startNormalized)
   date.setDate(date.getDate() + dayNumber - 1)
   return date
 }
 
 export function ArchiveDialog({ open, onOpenChange, currentMode }: ArchiveDialogProps) {
   const navigate = useNavigate()
-  const today = new Date()
+  const today = getTodayNormalized()
   const currentDayNumber = getDayNumber()
   
   // Limites de datas
   const minDate = getDateFromDay(Math.max(1, currentDayNumber - MAX_DAYS_BACK))
   const maxDate = getDateFromDay(currentDayNumber - 1) // Ontem (não permite hoje)
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(maxDate)
 
@@ -109,11 +123,28 @@ export function ArchiveDialog({ open, onOpenChange, currentMode }: ArchiveDialog
                     selected={selectedDate}
                     onSelect={setSelectedDate}
                     disabled={(date) => {
-                      return date < minDate || date > maxDate || date > today
+                      // Normalizar data para comparação
+                      const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                      const minNormalized = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate())
+                      const maxNormalized = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate())
+                      
+                      return normalized < minNormalized || normalized > maxNormalized
                     }}
-                    defaultMonth={maxDate}
-                    className="rounded-lg border border-gray-700 [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
+                    defaultMonth={yesterday}
+                    hidden={{ after: yesterday }}
+                    className="rounded-lg border-2 border-orange-600/30 bg-gray-800/50 text-white [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
                     buttonVariant="ghost"
+                    classNames={{
+                      months: "text-white",
+                      month_caption: "text-white",
+                      caption_label: "text-white font-semibold",
+                      weekday: "text-gray-400",
+                      day: "text-white hover:bg-orange-600/20",
+                      today: "bg-orange-600/30 text-white font-bold",
+                      selected: "bg-orange-600 text-white hover:bg-orange-700",
+                      disabled: "text-gray-600 opacity-40",
+                      outside: "text-gray-600 opacity-30",
+                    }}
                   />
                 </motion.div>
 
