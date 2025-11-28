@@ -71,6 +71,11 @@ function Game() {
       const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
       setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
       
+      // Se o jogo já está concluído, abrir TopTabs para mostrar outros modos
+      if (savedState.isGameOver) {
+        setTabsVisible(true)
+      }
+      
       // Não abrir stats automaticamente ao carregar
       // Stats só abre após completar uma tentativa
     } else {
