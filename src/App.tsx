@@ -130,6 +130,11 @@ function Game() {
     }
   }
 
+  const handleTileClick = useCallback((position: number) => {
+    if (!gameState || gameState.isGameOver) return
+    setCursorPosition(position)
+  }, [gameState])
+
   const handleKeyPress = useCallback((key: string) => {
     if (!gameState || gameState.isGameOver) return
     
@@ -285,13 +290,14 @@ function Game() {
           </div>
         )}
         
-        <div className="flex-1 flex flex-col justify-between py-4 max-w-7xl mx-auto w-full">
-          <GameLayout 
-            gameState={gameState} 
-            highContrast={settings.highContrast}
-            cursorPosition={cursorPosition}
-            shouldShake={shouldShake}
-          />
+            <div className="flex-1 flex flex-col justify-between py-4 max-w-7xl mx-auto w-full">
+              <GameLayout
+                gameState={gameState}
+                highContrast={settings.highContrast}
+                cursorPosition={cursorPosition}
+                shouldShake={shouldShake}
+                onTileClick={handleTileClick}
+              />
           
           <div className="pb-4">
             <Keyboard

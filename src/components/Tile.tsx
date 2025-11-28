@@ -8,6 +8,7 @@ interface TileProps {
   highContrast?: boolean
   animationDelay?: number
   isEditing?: boolean
+  onClick?: () => void
 }
 
 export function Tile({ 
@@ -15,7 +16,8 @@ export function Tile({
   state, 
   highContrast = false, 
   animationDelay = 0,
-  isEditing = false 
+  isEditing = false,
+  onClick 
 }: TileProps) {
   const stateClasses = {
     empty: 'bg-transparent border-2 border-gray-700',
@@ -31,10 +33,12 @@ export function Tile({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         'size-10 md:size-12 flex items-center justify-center text-2xl font-bold rounded-md transition-all duration-200',
         stateClasses[state],
-        isEditing && 'border-b-4 !border-b-gray-400'
+        isEditing && 'border-b-4 !border-b-gray-400',
+        onClick && 'cursor-pointer hover:scale-105'
       )}
       style={{
         animationDelay: state === 'filled' || state === 'correct' || state === 'present' || state === 'absent'

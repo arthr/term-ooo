@@ -7,13 +7,15 @@ interface GameLayoutProps {
   highContrast?: boolean
   cursorPosition?: number
   shouldShake?: boolean
+  onTileClick?: (position: number) => void
 }
 
 export function GameLayout({ 
   gameState, 
   highContrast = false,
   cursorPosition = 0,
-  shouldShake = false
+  shouldShake = false,
+  onTileClick
 }: GameLayoutProps) {
   const { mode, boards, currentGuess, currentRow, maxAttempts } = gameState
 
@@ -28,6 +30,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
       </div>
     )
@@ -44,6 +47,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
         <GameBoard
           board={boards[1]}
@@ -53,6 +57,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
       </div>
     )
@@ -70,6 +75,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
         <GameBoard
           board={boards[1]}
@@ -79,6 +85,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
         <GameBoard
           board={boards[2]}
@@ -88,6 +95,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
         <GameBoard
           board={boards[3]}
@@ -97,6 +105,7 @@ export function GameLayout({
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
+          onTileClick={onTileClick}
         />
       </div>
     </div>

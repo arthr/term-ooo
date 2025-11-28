@@ -11,6 +11,7 @@ interface GameBoardProps {
   highContrast?: boolean
   cursorPosition?: number
   shouldShake?: boolean
+  onTileClick?: (position: number) => void
 }
 
 export function GameBoard({
@@ -21,6 +22,7 @@ export function GameBoard({
   highContrast = false,
   cursorPosition = 0,
   shouldShake = false,
+  onTileClick,
 }: GameBoardProps) {
   const rows = []
 
@@ -55,6 +57,7 @@ export function GameBoard({
           state={letter ? 'filled' : 'empty'}
           highContrast={highContrast}
           isEditing={cursorPosition === i}
+          onClick={onTileClick ? () => onTileClick(i) : undefined}
         />
       )
     }
