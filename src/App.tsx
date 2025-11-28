@@ -40,6 +40,7 @@ function Game() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [devModeOpen, setDevModeOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
+  const [tabsVisible, setTabsVisible] = useState(false)
 
   // Determinar modo pela URL
   useEffect(() => {
@@ -382,9 +383,11 @@ function Game() {
         onStats={() => setStatsOpen(true)}
         onSettings={() => setSettingsOpen(true)}
         onAbout={() => setAboutOpen(true)}
+        onToggleTabs={() => setTabsVisible(!tabsVisible)}
+        tabsVisible={tabsVisible}
       />
       
-      <TopTabs currentMode={mode} onModeChange={handleModeChange} />
+      <TopTabs currentMode={mode} onModeChange={handleModeChange} isVisible={tabsVisible} />
       
       <main className="flex-1 container mx-auto px-4 flex flex-col">
         {error && (

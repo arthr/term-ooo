@@ -1,5 +1,6 @@
 // src/components/StatsDialog.tsx
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Countdown from 'react-countdown'
 import {
   Dialog,
@@ -8,6 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from './ui/dialog'
+import { ScrollArea } from './ui/scroll-area'
 import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
 import { getResultMessage, generateShareText } from '@/game/engine'
@@ -63,40 +65,69 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
 
   const maxValue = Math.max(...stats.guessDistribution, 1)
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: 0.05,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 },
+    },
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-gray-900 text-white border-gray-700">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">Estatísticas</DialogTitle>
+      <DialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-yellow-600 max-h-[85vh] p-0">
+        <DialogHeader className="px-6 pt-6 pb-2">
+          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+            Estatísticas
+          </DialogTitle>
           <DialogDescription className="sr-only">
             Estatísticas do jogo, distribuição de tentativas e próxima palavra
           </DialogDescription>
         </DialogHeader>
         
-        {/* Solutions quando jogo terminou */}
-        {gameState.isGameOver && (
-          <div className="w-full bg-green-600 rounded-lg p-3 text-center space-y-1">
-            <div className="text-xs text-green-100 font-medium">
-              {gameState.isWin ? '🎉 Palavra' + (gameState.boards.length > 1 ? 's' : '') : '💀 Era'}
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              {gameState.boards.map((board, index) => (
-                <span key={index} className="text-white font-bold text-lg uppercase tracking-wider">
-                  {board.solution}{index < gameState.boards.length - 1 ? ' - ' : ''}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        <div className="space-y-4">
-          {gameState.isGameOver && (
-            <div className="text-center py-3 bg-gray-800 rounded-lg">
-              <p className="text-lg font-semibold">{getResultMessage(gameState)}</p>
-            </div>
-          )}
-          
-          <div className="grid grid-cols-4 gap-2 text-center">
+        <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-4 py-4 pr-4"
+              >
+                {/* Solutions quando jogo terminou */}
+                {gameState.isGameOver && (
+                  <motion.div variants={itemVariants} className="w-full bg-green-600 rounded-lg p-3 text-center space-y-1">
+                    <div className="text-xs text-green-100 font-medium">
+                      {gameState.isWin ? '🎉 Palavra' + (gameState.boards.length > 1 ? 's' : '') : '💀 Era'}
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {gameState.boards.map((board, index) => (
+                        <span key={index} className="text-white font-bold text-lg uppercase tracking-wider">
+                          {board.solution}{index < gameState.boards.length - 1 ? ' - ' : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+                {gameState.isGameOver && (
+                  <motion.div variants={itemVariants} className="text-center py-3 bg-gray-800 rounded-lg">
+                    <p className="text-lg font-semibold">{getResultMessage(gameState)}</p>
+                  </motion.div>
+                )}
+                
+                <motion.div variants={itemVariants} className="grid grid-cols-4 gap-2 text-center">
             <div>
               <div className="text-2xl font-bold">{stats.gamesPlayed}</div>
               <div className="text-xs text-gray-400">Jogadas</div>
@@ -109,15 +140,15 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
               <div className="text-2xl font-bold">{stats.currentStreak}</div>
               <div className="text-xs text-gray-400">Sequência</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold">{stats.maxStreak}</div>
-              <div className="text-xs text-gray-400">Melhor</div>
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="text-sm font-semibold mb-2">Distribuição de Tentativas</h3>
-            <div className="space-y-1">
+                  <div>
+                    <div className="text-2xl font-bold">{stats.maxStreak}</div>
+                    <div className="text-xs text-gray-400">Melhor</div>
+                  </div>
+                </motion.div>
+                
+                <motion.div variants={itemVariants}>
+                  <h3 className="text-base font-semibold mb-3">Distribuição de Tentativas</h3>
+            <div className="space-y-1.5">
               {stats.guessDistribution.map((count, index) => {
                 const isCurrentAttempt = gameState.isGameOver && gameState.isWin && gameState.currentRow - 1 === index
                 const percentage = maxValue > 0 ? (count / maxValue) * 100 : 0
@@ -132,26 +163,26 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
                 }
                 
                 return (
-                  <div key={index} className="flex items-center gap-2 text-xs">
-                    <div className="w-6 text-center">{getLabel(index)}</div>
-                    <div className="flex-1 bg-gray-800 h-5 rounded overflow-hidden">
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <div className="w-7 text-center text-base">{getLabel(index)}</div>
+                    <div className="flex-1 bg-gray-800 h-6 rounded overflow-hidden">
                       <div
                         className={`h-full flex items-center justify-end px-2 transition-all ${
                           isCurrentAttempt ? 'bg-green-600' : 'bg-gray-600'
                         }`}
                         style={{ width: `${Math.max(percentage, count > 0 ? 8 : 0)}%` }}
                       >
-                        {count > 0 && <span className="font-semibold">{count}</span>}
+                        {count > 0 && <span className="font-semibold text-sm">{count}</span>}
                       </div>
                     </div>
                   </div>
-                )
-              })}
-            </div>
-          </div>
-          
-          {gameState.isGameOver && (
-            <div className="border-t border-gray-700 pt-4 space-y-3">
+                  )
+                })}
+                  </div>
+                </motion.div>
+                
+                {gameState.isGameOver && (
+                  <motion.div variants={itemVariants} className="border-t border-gray-700 pt-4 space-y-3">
               <div className="flex justify-between items-center">
                 <div>
                   <div className="text-xs text-gray-400">Próxima Palavra</div>
@@ -173,11 +204,14 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
                       Compartilhar
                     </>
                   )}
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+                  </Button>
+                </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )

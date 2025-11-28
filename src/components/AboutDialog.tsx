@@ -71,7 +71,7 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-green-600 max-h-[90vh] p-0">
         <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-3xl font-bold text-center bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
             A História Por Trás do Clone
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -79,7 +79,7 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[calc(90vh-100px)] px-6">
+        <ScrollArea className="max-h-[calc(90vh-80px)] px-6">
           <AnimatePresence>
             {open && (
               <motion.div
