@@ -429,7 +429,13 @@ function Game() {
       
       <StatsDialog
         open={statsOpen}
-        onOpenChange={setStatsOpen}
+        onOpenChange={(open) => {
+          setStatsOpen(open)
+          // Quando fecha o StatsDialog após jogo concluído, mostrar TopTabs
+          if (!open && gameState.isGameOver) {
+            setTabsVisible(true)
+          }
+        }}
         stats={stats}
         gameState={gameState}
       />
