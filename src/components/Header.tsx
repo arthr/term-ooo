@@ -68,7 +68,7 @@ export function Header({
         preload="auto"
       />
 
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container max-w-2xl mx-auto px-2 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -123,7 +123,7 @@ export function Header({
               size="icon"
               onClick={handleBackToToday}
               aria-label="Voltar para Hoje"
-              className="text-green-400 hover:text-green-300"
+              className="text-green-400 hover:text-green-300 hidden md:block"
             >
               <Home className="w-6 h-6" />
             </Button>
@@ -133,7 +133,7 @@ export function Header({
               size="icon"
               onClick={onArchive}
               aria-label="Arquivo de Dias Anteriores"
-              className="text-gray-300 hover:text-white"
+              className="text-gray-300 hover:text-white hidden md:block"
             >
               <Calendar className="w-6 h-6" />
             </Button>

@@ -29,7 +29,40 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 2. 📅 Arquivo de Dias Anteriores (Time Machine)
+### 2. 📱 Layout Responsivo Mobile
+**Status:** ✅ Concluído (Nov 2025)
+
+**Descrição:**
+- Otimização completa do layout para dispositivos móveis
+- Tiles com aspect-ratio e tamanhos dinâmicos
+- Grid 2x2 inteligente para Quarteto em mobile
+- Espaçamentos ajustados (gap menor em mobile)
+- Botões do Header otimizados (alguns ocultos em mobile)
+- Keyboard com padding responsivo
+- Font-size fluido usando clamp()
+
+**Implementação:**
+- ✅ `src/components/Tile.tsx` - aspect-square, min-w/h responsivo, font fluido
+- ✅ `src/components/GameBoard.tsx` - Grid cols-5 para tiles, className prop
+- ✅ `src/components/GameLayout.tsx` - Layouts específicos por modo
+  - Termo: w-11/12 md:max-w-xs centralizado
+  - Dueto: space-x-3 md:space-x-8
+  - Quarteto: grid cols-2 em mobile, flex em desktop
+- ✅ `src/components/Keyboard.tsx` - gap/padding otimizados
+- ✅ `src/components/Header.tsx` - max-w-2xl, botões hidden em mobile
+- ✅ `src/App.tsx` - Removido max-w excessivo
+
+**Benefícios:**
+- Experiência fluida em telas pequenas (320px+)
+- Melhor uso do espaço disponível
+- UX consistente entre mobile e desktop
+- Performance mantida
+
+**Complexidade:** ⭐⭐⭐ Média-Alta
+
+---
+
+### 3. 📅 Arquivo de Dias Anteriores (Time Machine)
 **Status:** ✅ Concluído (Nov 2025)
 
 **Descrição:**
@@ -77,7 +110,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 3. 🖼️ Compartilhamento Rico (Imagem)
+### 4. 🖼️ Compartilhamento Rico (Imagem)
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -105,7 +138,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ## 🎯 Prioridade Média
 
-### 4. 📊 Estatísticas Avançadas
+### 5. 📊 Estatísticas Avançadas
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -128,7 +161,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 5. 🌈 Temas Customizáveis
+### 6. 🌈 Temas Customizáveis
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -151,7 +184,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 6. 🎯 Modo 6 Letras
+### 7. 🎯 Modo 6 Letras
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -174,7 +207,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ## 🎯 Prioridade Baixa
 
-### 7. 🏅 Sistema de Conquistas
+### 8. 🏅 Sistema de Conquistas
 **Status:** 💭 Ideia
 
 **Descrição:**
@@ -191,7 +224,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 8. 🌍 Múltiplos Idiomas
+### 9. 🌍 Múltiplos Idiomas
 **Status:** 💭 Ideia
 
 **Descrição:**
@@ -203,7 +236,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 9. 👥 Modo Multiplayer/Competitivo
+### 10. 👥 Modo Multiplayer/Competitivo
 **Status:** 💭 Ideia
 
 **Descrição:**

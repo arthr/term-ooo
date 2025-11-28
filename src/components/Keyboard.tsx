@@ -94,9 +94,9 @@ export function Keyboard({ keyStates, onKeyPress, highContrast = false, disabled
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-2">
+    <div className="w-full max-w-2xl mx-auto py-2">
       {KEYBOARD_ROWS.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex gap-1 justify-center my-1">
+        <div key={rowIndex} className="flex gap-1.5 justify-center my-2">
           {row.map((key) => {
             const isSpecial = key === 'ENTER' || key === 'BACKSPACE'
             
@@ -108,7 +108,7 @@ export function Keyboard({ keyStates, onKeyPress, highContrast = false, disabled
                 onClick={() => handleClick(key)}
                 disabled={disabled}
                 className={cn(
-                  'font-bold rounded text-sm md:text-base py-3 px-2 transition-colors',
+                  'font-bold rounded text-sm md:text-base py-2 md:py-4 px-2 md:px-4 transition-colors',
                   isSpecial ? 'px-4 md:px-6' : 'min-w-[32px] md:min-w-[40px]',
                   keyStyles.bg,
                   disabled && 'opacity-50 cursor-not-allowed'

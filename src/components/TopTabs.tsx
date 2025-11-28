@@ -18,7 +18,7 @@ export function TopTabs({ currentMode, onModeChange, isVisible }: TopTabsProps) 
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-          className="w-full bg-gray-900 border-b border-gray-700 overflow-hidden"
+          className="w-full bg-gray-900 border-b border-gray-700"
         >
           <div className="container mx-auto px-4 py-3">
             <Tabs value={currentMode} onValueChange={(value) => onModeChange(value as GameMode)}>
