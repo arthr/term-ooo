@@ -285,13 +285,13 @@ export function getResultMessage(state: GameState): string {
   
   if (state.isWin) {
     const attempts = state.currentRow
-    if (attempts <= 2) return 'Fenomenal!'
-    if (attempts <= 4) return 'Excelente!'
-    if (attempts <= 6) return 'Bom!'
-    return 'Conseguiu!'
+    if (attempts <= 2) return '🥇 Fenomenal!'
+    if (attempts <= 4) return '🥈 Excelente!'
+    if (attempts <= 6) return '🥉 Bom!'
+    return '🎉 Conseguiu!'
   }
   
-  return 'Tente novamente amanhã!'
+  return '💀 Tente novamente amanhã!'
 }
 
 export function generateShareText(state: GameState): string {

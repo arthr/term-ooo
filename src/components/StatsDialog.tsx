@@ -98,9 +98,18 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
                 const isCurrentAttempt = gameState.isGameOver && gameState.isWin && gameState.currentRow - 1 === index
                 const percentage = maxValue > 0 ? (count / maxValue) * 100 : 0
                 
+                // Medalhas baseadas na posição
+                const getLabel = (idx: number) => {
+                  if (idx === stats.guessDistribution.length - 1) return '💀'
+                  if (idx === 0) return `🥇`
+                  if (idx === 1) return `🥈`
+                  if (idx === 2) return `🥉`
+                  return `${idx + 1}`
+                }
+                
                 return (
                   <div key={index} className="flex items-center gap-2 text-xs">
-                    <div className="w-4 text-right">{index === stats.guessDistribution.length - 1 ? 'X' : index + 1}</div>
+                    <div className="w-6 text-center">{getLabel(index)}</div>
                     <div className="flex-1 bg-gray-800 h-5 rounded overflow-hidden">
                       <div
                         className={`h-full flex items-center justify-end px-2 transition-all ${
