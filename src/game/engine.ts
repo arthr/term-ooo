@@ -59,6 +59,22 @@ export function getDayNumber(): number {
   return getDaysSinceStart(START_DATE)
 }
 
+// Converte um dayNumber em uma Date
+export function getDateFromDayNumber(dayNumber: number): Date {
+  const startNormalized = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate())
+  const date = new Date(startNormalized)
+  date.setDate(date.getDate() + dayNumber - 1)
+  return date
+}
+
+// Converte uma Date em dayNumber
+export function getDayNumberFromDate(date: Date): number {
+  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const startNormalized = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate())
+  const timeDiff = normalized.getTime() - startNormalized.getTime()
+  return Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1
+}
+
 // Busca palavra com acentos no mapa, se existir
 export function getAccentedWord(normalized: string): string | undefined {
   return accentMap[normalized]
