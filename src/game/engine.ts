@@ -1,12 +1,14 @@
 // src/game/engine.ts
-import { normalizeString, getDaysSinceStart } from '@/lib/utils'
+import { normalizeString } from '@/lib/utils'
+import { 
+  getDayNumber as getDayNumberFromDates,
+  getDateFromDayNumber as getDateFromDayNumberDates,
+  getDayNumberFromDate as getDayNumberFromDateDates
+} from '@/lib/dates'
 import { GameMode, GameState, Board, Guess, Tile, KeyState, Settings } from './types'
 import { termoSolutions, termoAllowed, accentMap } from './words-termo'
 import { duetoSolutions, duetoAllowed } from './words-dueto'
 import { quartetoSolutions, quartetoAllowed } from './words-quarteto'
-
-// Data inicial do Term.ooo original: 2 de janeiro de 2022
-const START_DATE = new Date('2022-01-02T00:00:00') // 02/jan/2022 como no original
 
 function getWordsForMode(mode: GameMode) {
   switch (mode) {
@@ -55,25 +57,10 @@ export function getDailyWords(mode: GameMode, dayNumber: number): string[] {
   return words
 }
 
-export function getDayNumber(): number {
-  return getDaysSinceStart(START_DATE)
-}
-
-// Converte um dayNumber em uma Date
-export function getDateFromDayNumber(dayNumber: number): Date {
-  const startNormalized = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate())
-  const date = new Date(startNormalized)
-  date.setDate(date.getDate() + dayNumber - 1)
-  return date
-}
-
-// Converte uma Date em dayNumber
-export function getDayNumberFromDate(date: Date): number {
-  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  const startNormalized = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate())
-  const timeDiff = normalized.getTime() - startNormalized.getTime()
-  return Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1
-}
+// Re-exportar funções centralizadas de datas
+export const getDayNumber = getDayNumberFromDates
+export const getDateFromDayNumber = getDateFromDayNumberDates
+export const getDayNumberFromDate = getDayNumberFromDateDates
 
 // Busca palavra com acentos no mapa, se existir
 export function getAccentedWord(normalized: string): string | undefined {

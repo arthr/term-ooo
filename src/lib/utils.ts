@@ -15,28 +15,7 @@ export function normalizeString(str: string): string {
     .toLowerCase() // Importante: manter minúsculas como o original
 }
 
-export function getTodayDateKey(): string {
-  const today = new Date()
-  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-}
-
-export function getDaysSinceStart(startDate: Date): number {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  startDate.setHours(0, 0, 0, 0)
-  return Math.floor((today.getTime() - startDate.getTime()) / 86400000)
-}
-
-export function getTimeUntilMidnight(): string {
-  const now = new Date()
-  const midnight = new Date()
-  midnight.setHours(24, 0, 0, 0)
-  
-  const diff = midnight.getTime() - now.getTime()
-  const hours = Math.floor(diff / 3600000)
-  const minutes = Math.floor((diff % 3600000) / 60000)
-  const seconds = Math.floor((diff % 60000) / 1000)
-  
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-}
+// DEPRECATED: Usar src/lib/dates.ts para todas as operações de data
+// Mantido apenas para compatibilidade temporária
+export { getTodayDateKey, getTimeUntilMidnight } from './dates'
 
