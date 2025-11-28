@@ -54,3 +54,38 @@
   animation: shake 0.5s ease-in-out;
 }
 
+/* Animação de flip extraída do Term.ooo original */
+@keyframes tile-flip {
+  0% {
+    background-color: transparent;
+    border: 2px solid #4C4347;
+    transform: perspective(200px) rotateY(0deg);
+  }
+
+  49.99999% {
+    background-color: transparent;
+    border: 2px solid #4C4347;
+    transform: perspective(200px) rotateY(90deg);
+  }
+
+  50% {
+    transform: perspective(200px) rotateY(-90deg);
+    background-color: var(--tile-color);
+    border: none;
+  }
+
+  50.00001% {
+    background-color: var(--tile-color);
+    border: none;
+  }
+
+  100% {
+    transform: perspective(200px) rotateY(0deg);
+    background-color: var(--tile-color);
+  }
+}
+
+.animate-flip {
+  animation: 0.45s linear tile-flip forwards;
+}
+

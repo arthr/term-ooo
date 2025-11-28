@@ -8,6 +8,7 @@ interface GameLayoutProps {
   cursorPosition?: number
   shouldShake?: boolean
   onTileClick?: (position: number) => void
+  revealingRow?: number
 }
 
 export function GameLayout({ 
@@ -15,7 +16,8 @@ export function GameLayout({
   highContrast = false,
   cursorPosition = 0,
   shouldShake = false,
-  onTileClick
+  onTileClick,
+  revealingRow = -1
 }: GameLayoutProps) {
   const { mode, boards, currentGuess, currentRow, maxAttempts } = gameState
 
@@ -31,6 +33,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
       </div>
     )
@@ -48,6 +51,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
         <GameBoard
           board={boards[1]}
@@ -58,6 +62,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
       </div>
     )
@@ -76,6 +81,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
         <GameBoard
           board={boards[1]}
@@ -86,6 +92,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
         <GameBoard
           board={boards[2]}
@@ -96,6 +103,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
         <GameBoard
           board={boards[3]}
@@ -106,6 +114,7 @@ export function GameLayout({
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
           onTileClick={onTileClick}
+          revealingRow={revealingRow}
         />
       </div>
     </div>

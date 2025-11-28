@@ -9,6 +9,7 @@ interface TileProps {
   animationDelay?: number
   isEditing?: boolean
   onClick?: () => void
+  isFlipping?: boolean
 }
 
 export function Tile({ 
@@ -17,7 +18,8 @@ export function Tile({
   highContrast = false, 
   animationDelay = 0,
   isEditing = false,
-  onClick 
+  onClick,
+  isFlipping = false
 }: TileProps) {
   const stateClasses = {
     empty: 'bg-transparent border-2 border-gray-700',
@@ -31,20 +33,28 @@ export function Tile({
     absent: 'bg-gray-800 border-gray-800 text-white',
   }
 
+  // Determinar a cor final para a animação (CSS variable)
+  const getTileColor = () => {
+    if (state === 'correct') return highContrast ? '#f97316' : '#16a34a'
+    if (state === 'present') return highContrast ? '#06b6d4' : '#eab308'
+    if (state === 'absent') return '#1f2937'
+    return 'transparent'
+  }
+
   return (
     <div
       onClick={onClick}
       className={cn(
-        'size-10 md:size-12 flex items-center justify-center text-2xl font-bold rounded-md transition-all duration-200',
-        stateClasses[state],
+        'size-10 md:size-12 flex items-center justify-center text-2xl font-bold rounded-md',
+        !isFlipping && stateClasses[state],
         isEditing && 'border-b-4 !border-b-gray-400',
-        onClick && 'cursor-pointer hover:scale-105'
+        onClick && 'cursor-pointer hover:scale-105',
+        isFlipping && 'animate-flip text-white'
       )}
       style={{
-        animationDelay: state === 'filled' || state === 'correct' || state === 'present' || state === 'absent'
-          ? `${animationDelay}ms`
-          : undefined,
-      }}
+        animationDelay: isFlipping ? `${animationDelay}ms` : undefined,
+        '--tile-color': getTileColor(),
+      } as React.CSSProperties}
     >
       {letter.toUpperCase()}
     </div>

@@ -16,6 +16,7 @@ import { Keyboard } from './components/Keyboard'
 import { HelpDialog } from './components/HelpDialog'
 import { StatsDialog } from './components/StatsDialog'
 import { SettingsDialog } from './components/SettingsDialog'
+import { DevModeDialog } from './components/DevModeDialog'
 
 function Game() {
   const navigate = useNavigate()
@@ -28,10 +29,12 @@ function Game() {
   const [error, setError] = useState<string>('')
   const [cursorPosition, setCursorPosition] = useState<number>(0)
   const [shouldShake, setShouldShake] = useState<boolean>(false)
+  const [revealingRow, setRevealingRow] = useState<number>(-1)
   
   const [helpOpen, setHelpOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [devModeOpen, setDevModeOpen] = useState(false)
 
   // Determinar modo pela URL
   useEffect(() => {
@@ -130,6 +133,43 @@ function Game() {
     }
   }
 
+  // Dev Mode handlers
+  const handleResetLocalStorage = () => {
+    localStorage.clear()
+    window.location.reload()
+  }
+
+  const handleSkipToWin = () => {
+    if (!gameState || gameState.isGameOver) return
+    
+    // Criar guess perfeito para todas as boards
+    const perfectGuesses = gameState.boards.map(board => board.solution)
+    
+    // Simular guesses perfeitas até a vitória
+    let currentState = gameState
+    for (const solution of perfectGuesses) {
+      // Preencher currentGuess com a solução
+      const solutionArray = solution.split('').map(c => c.toLowerCase())
+      currentState = { ...currentState, currentGuess: solutionArray }
+      
+      // Processar a guess
+      const result = processGuess(currentState, settings)
+      if (!result.error) {
+        currentState = result.newState
+      }
+    }
+    
+    // Atualizar estado
+    setGameState(currentState)
+    storage.saveGameState(mode, currentState.dateKey, currentState)
+    
+    // Abrir stats após vitória
+    setTimeout(() => {
+      setStatsOpen(true)
+      setDevModeOpen(false)
+    }, 500)
+  }
+
   const handleTileClick = useCallback((position: number) => {
     if (!gameState || gameState.isGameOver) return
     setCursorPosition(position)
@@ -151,12 +191,21 @@ function Game() {
           setShouldShake(false)
         }, 500)
       } else {
+        // Ativar animação de flip para a linha que acabou de ser submetida
+        const submittedRow = gameState.currentRow
+        setRevealingRow(submittedRow)
+        
+        // Resetar revealingRow após a animação (450ms + 100ms * 4 delays = 850ms)
+        setTimeout(() => {
+          setRevealingRow(-1)
+        }, 900)
+        
         setGameState(result.newState)
         storage.saveGameState(mode, gameState.dateKey, result.newState)
         setCursorPosition(0)
         
         if (result.newState.isGameOver) {
-          setTimeout(() => setStatsOpen(true), 1000)
+          setTimeout(() => setStatsOpen(true), 1200)
         }
       }
     } else if (key === 'BACKSPACE') {
@@ -262,6 +311,30 @@ function Game() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyPress, helpOpen, statsOpen, settingsOpen])
 
+  // Konami Code listener (↑ ↑ ↓ ↓ ← → ← → B A)
+  useEffect(() => {
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'B', 'A']
+    let konamiIndex = 0
+
+    const handleKonamiCode = (e: KeyboardEvent) => {
+      const key = e.key === 'b' || e.key === 'B' ? 'B' : e.key === 'a' || e.key === 'A' ? 'A' : e.key
+
+      if (key === konamiCode[konamiIndex]) {
+        konamiIndex++
+        if (konamiIndex === konamiCode.length) {
+          // Konami Code completo!
+          setDevModeOpen(true)
+          konamiIndex = 0
+        }
+      } else {
+        konamiIndex = 0
+      }
+    }
+
+    window.addEventListener('keydown', handleKonamiCode)
+    return () => window.removeEventListener('keydown', handleKonamiCode)
+  }, [])
+
   if (!gameState) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
@@ -297,6 +370,7 @@ function Game() {
                 cursorPosition={cursorPosition}
                 shouldShake={shouldShake}
                 onTileClick={handleTileClick}
+                revealingRow={revealingRow}
               />
           
           <div className="pb-4">
@@ -328,6 +402,14 @@ function Game() {
           setSettingsOpen(false)
           setStatsOpen(true)
         }}
+      />
+
+      <DevModeDialog
+        open={devModeOpen}
+        onOpenChange={setDevModeOpen}
+        gameState={gameState}
+        onResetLocalStorage={handleResetLocalStorage}
+        onSkipToWin={handleSkipToWin}
       />
     </div>
   )

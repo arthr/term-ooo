@@ -12,6 +12,7 @@ interface GameBoardProps {
   cursorPosition?: number
   shouldShake?: boolean
   onTileClick?: (position: number) => void
+  revealingRow?: number // Índice da linha que está sendo revelada (para animação flip)
 }
 
 export function GameBoard({
@@ -23,12 +24,15 @@ export function GameBoard({
   cursorPosition = 0,
   shouldShake = false,
   onTileClick,
+  revealingRow = -1,
 }: GameBoardProps) {
   const rows = []
 
   // Linhas com palpites já feitos
   for (let i = 0; i < board.guesses.length; i++) {
     const guess = board.guesses[i]
+    const isRevealing = i === revealingRow
+    
     rows.push(
       <div key={i} className="flex gap-1 justify-center">
         {guess.tiles.map((tile, j) => (
@@ -38,6 +42,7 @@ export function GameBoard({
             state={tile.state}
             highContrast={highContrast}
             animationDelay={j * 100}
+            isFlipping={isRevealing}
           />
         ))}
       </div>

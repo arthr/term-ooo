@@ -81,9 +81,18 @@ export function SettingsDialog({
             </button>
           </div>
           
-          <div className="text-xs text-gray-400 text-center py-2">
+          <div className="text-xs text-gray-400 text-center py-2 space-y-2">
             <p>Jogo inspirado em Term.ooo / Wordle</p>
-            <p className="mt-1">Clone educativo sem fins comerciais</p>
+            <p>Clone educativo sem fins comerciais</p>
+            
+            {/* Konami Code Hint */}
+            <div className="pt-2 border-t border-gray-800">
+              <p className="text-[10px] text-gray-600 flex items-center justify-center gap-1">
+                <span className="text-gray-500">🎮</span>
+                <span>Dev:</span>
+                <code className="bg-gray-800 px-1 rounded text-gray-500">↑↑↓↓←→←→BA</code>
+              </p>
+            </div>
           </div>
         </div>
       </DialogContent>
