@@ -10,6 +10,7 @@ interface GameBoardProps {
   maxAttempts: number
   highContrast?: boolean
   cursorPosition?: number
+  shouldShake?: boolean
 }
 
 export function GameBoard({
@@ -19,6 +20,7 @@ export function GameBoard({
   maxAttempts,
   highContrast = false,
   cursorPosition = 0,
+  shouldShake = false,
 }: GameBoardProps) {
   const rows = []
 
@@ -57,7 +59,13 @@ export function GameBoard({
       )
     }
     rows.push(
-      <div key={currentRow} className="flex gap-1 justify-center">
+      <div 
+        key={currentRow} 
+        className={cn(
+          "flex gap-1 justify-center",
+          shouldShake && "animate-shake"
+        )}
+      >
         {currentTiles}
       </div>
     )

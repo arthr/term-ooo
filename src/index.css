@@ -36,3 +36,21 @@
   }
 }
 
+/* Animação de shake para palavra inválida (igual ao Term.ooo original) */
+@keyframes shake {
+  10% { transform: translateX(-14px); }
+  20% { transform: translateX(14px); }
+  30% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  90% { transform: translateX(-1px); }
+  100% { transform: translateX(1px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+

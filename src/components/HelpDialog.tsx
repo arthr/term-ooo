@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from './ui/dialog'
 import { Tile } from './Tile'
 
@@ -18,6 +19,9 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
       <DialogContent className="max-w-md bg-gray-900 text-white border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">Como Jogar</DialogTitle>
+          <DialogDescription className="sr-only">
+            Instruções sobre como jogar Termo, Dueto e Quarteto
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 text-sm">

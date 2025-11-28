@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from './ui/dialog'
 import { Switch } from './ui/switch'
 import { Settings } from '@/game/types'
@@ -36,6 +37,9 @@ export function SettingsDialog({
       <DialogContent className="max-w-md bg-gray-900 text-white border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">Configurações</DialogTitle>
+          <DialogDescription className="sr-only">
+            Configurações do jogo incluindo modo difícil e alto contraste
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6">

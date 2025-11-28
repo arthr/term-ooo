@@ -29,7 +29,7 @@ export interface GameState {
   maxAttempts: number
   isGameOver: boolean
   isWin: boolean
-  keyStates: Record<string, KeyState>
+  keyStates: Record<string, KeyState[]> // Array de estados, um por board
   dateKey: string
   dayNumber: number
 }

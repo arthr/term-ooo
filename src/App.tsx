@@ -24,9 +24,10 @@ function Game() {
   const [mode, setMode] = useState<GameMode>('termo')
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
-  const [stats, setStats] = useState<Stats>(storage.getStats('termo'))
+  const [stats, setStats] = useState<Stats | null>(null)
   const [error, setError] = useState<string>('')
   const [cursorPosition, setCursorPosition] = useState<number>(0)
+  const [shouldShake, setShouldShake] = useState<boolean>(false)
   
   const [helpOpen, setHelpOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
@@ -61,10 +62,8 @@ function Game() {
       const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
       setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
       
-      // Abrir stats automaticamente se o jogo já terminou
-      if (savedState.isGameOver) {
-        setTimeout(() => setStatsOpen(true), 500)
-      }
+      // Não abrir stats automaticamente ao carregar
+      // Stats só abre após completar uma tentativa
     } else {
       const newState = createInitialGameState(mode, dayNumber, dateKey)
       setGameState(newState)
@@ -72,7 +71,9 @@ function Game() {
       setCursorPosition(0)
     }
     
-    setStats(storage.getStats(mode))
+    // IMPORTANTE: Sempre recarregar stats do modo atual
+    const currentModeStats = storage.getStats(mode)
+    setStats(currentModeStats)
   }, [mode])
 
   // Salvar configurações
@@ -83,6 +84,12 @@ function Game() {
   // Atualizar stats quando o jogo termina
   useEffect(() => {
     if (gameState && gameState.isGameOver && gameState.currentRow > 0) {
+      // IMPORTANTE: Verificar se o modo do gameState corresponde ao modo atual
+      // para evitar salvar stats no modo errado
+      if (gameState.mode !== mode) {
+        return
+      }
+      
       const currentStats = storage.getStats(mode)
       
       // Evitar atualizar estatísticas múltiplas vezes
@@ -111,7 +118,7 @@ function Game() {
       storage.saveStats(mode, newStats)
       setStats(newStats)
     }
-  }, [gameState?.isGameOver, mode])
+  }, [gameState?.isGameOver, gameState?.mode, mode])
 
   const handleModeChange = (newMode: GameMode) => {
     if (newMode === 'termo') {
@@ -133,7 +140,11 @@ function Game() {
       
       if (result.error) {
         setError(result.error)
-        setTimeout(() => setError(''), 2000)
+        setShouldShake(true)
+        setTimeout(() => {
+          setError('')
+          setShouldShake(false)
+        }, 500)
       } else {
         setGameState(result.newState)
         storage.saveGameState(mode, gameState.dateKey, result.newState)
@@ -279,6 +290,7 @@ function Game() {
             gameState={gameState} 
             highContrast={settings.highContrast}
             cursorPosition={cursorPosition}
+            shouldShake={shouldShake}
           />
           
           <div className="pb-4">
@@ -317,7 +329,12 @@ function Game() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <Routes>
         <Route path="/" element={<Game />} />
         <Route path="/2" element={<Game />} />

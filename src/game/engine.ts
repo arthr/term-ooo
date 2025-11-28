@@ -159,22 +159,30 @@ export function checkHardModeCompliance(
   return { valid: true }
 }
 
-export function updateKeyStates(boards: Board[]): Record<string, KeyState> {
-  const keyStates: Record<string, KeyState> = {}
+export function updateKeyStates(boards: Board[]): Record<string, KeyState[]> {
+  const keyStates: Record<string, KeyState[]> = {}
   
-  for (const board of boards) {
+  // Para cada board, calcular os estados das teclas
+  for (let boardIndex = 0; boardIndex < boards.length; boardIndex++) {
+    const board = boards[boardIndex]
+    
     for (const guess of board.guesses) {
       for (const tile of guess.tiles) {
         const letter = tile.letter
-        const currentState = keyStates[letter] || 'unused'
         
-        // Prioridade: correct > present > absent
+        if (!keyStates[letter]) {
+          keyStates[letter] = new Array(boards.length).fill('unused') as KeyState[]
+        }
+        
+        const currentState = keyStates[letter][boardIndex]
+        
+        // Prioridade: correct > present > absent > unused
         if (tile.state === 'correct') {
-          keyStates[letter] = 'correct'
+          keyStates[letter][boardIndex] = 'correct'
         } else if (tile.state === 'present' && currentState !== 'correct') {
-          keyStates[letter] = 'present'
+          keyStates[letter][boardIndex] = 'present'
         } else if (tile.state === 'absent' && currentState === 'unused') {
-          keyStates[letter] = 'absent'
+          keyStates[letter][boardIndex] = 'absent'
         }
       }
     }

@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from './ui/dialog'
 import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
@@ -15,7 +16,7 @@ import { Share2, Check } from 'lucide-react'
 interface StatsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  stats: Stats
+  stats: Stats | null
   gameState: GameState
 }
 
@@ -30,6 +31,11 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
 
     return () => clearInterval(interval)
   }, [])
+  
+  // Se stats é null, usar valores padrão
+  if (!stats) {
+    return null
+  }
 
   const winPercentage = stats.gamesPlayed > 0
     ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100)
@@ -54,6 +60,9 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
       <DialogContent className="max-w-md bg-gray-900 text-white border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">Estatísticas</DialogTitle>
+          <DialogDescription className="sr-only">
+            Estatísticas do jogo, distribuição de tentativas e próxima palavra
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

@@ -6,12 +6,14 @@ interface GameLayoutProps {
   gameState: GameState
   highContrast?: boolean
   cursorPosition?: number
+  shouldShake?: boolean
 }
 
 export function GameLayout({ 
   gameState, 
   highContrast = false,
-  cursorPosition = 0 
+  cursorPosition = 0,
+  shouldShake = false
 }: GameLayoutProps) {
   const { mode, boards, currentGuess, currentRow, maxAttempts } = gameState
 
@@ -25,6 +27,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
       </div>
     )
@@ -40,6 +43,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
         <GameBoard
           board={boards[1]}
@@ -48,6 +52,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
       </div>
     )
@@ -64,6 +69,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
         <GameBoard
           board={boards[1]}
@@ -72,6 +78,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
         <GameBoard
           board={boards[2]}
@@ -80,6 +87,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
         <GameBoard
           board={boards[3]}
@@ -88,6 +96,7 @@ export function GameLayout({
           maxAttempts={maxAttempts}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
         />
       </div>
     </div>
