@@ -30,7 +30,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 ---
 
 ### 2. 📅 Arquivo de Dias Anteriores (Time Machine)
-**Status:** 📋 Planejado
+**Status:** ✅ Concluído (Nov 2025)
 
 **Descrição:**
 - Jogar desafios de dias anteriores
@@ -56,18 +56,24 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 - Badge visual: "🕰️ Dia #123 - Arquivo"
 - localStorage separado: `archive-termo-123`, `archive-dueto-123`, etc.
 
-**Arquivos a modificar:**
-- `src/App.tsx` - Ler query param `?dia=X` e passar para engine
-- `src/game/engine.ts` - `getDailyWords(mode, customDay?)` 
-- `src/components/Header.tsx` - Novo botão "Arquivo"
-- Novo: `src/components/ArchiveDialog.tsx` - Seletor de dias
-- `src/game/storage.ts` - Namespace separado para stats de arquivo
+**Implementado:**
+- ✅ `src/lib/dates.ts` - Módulo central de datas (88 linhas)
+- ✅ `src/components/ArchiveDialog.tsx` - Calendar do shadcn/ui
+- ✅ `src/App.tsx` - Query param `?dia=X` com validações
+- ✅ `src/components/Header.tsx` - Botão Calendar (📅) e Home (🏠)
+- ✅ `src/game/engine.ts` - Re-exporta funções de dates.ts
+- ✅ `src/components/StatsDialog.tsx` - Detecta e marca "(Arquivo)"
 
-**Considerações:**
-- Stats de arquivo NÃO contam para streak principal
-- Compartilhamento deve indicar "Arquivo - Dia #X"
-- Limite opcional: ex. "últimos 365 dias"
-- Desabilitar "Hard Mode" warning em arquivos (opcional)
+**Implementação final:**
+- ✅ Calendar visual com dark theme integrado
+- ✅ Limite de 30 dias no passado (configurável)
+- ✅ Stats de arquivo NÃO contam para streak
+- ✅ Validação de segurança: bloqueia dias futuros
+- ✅ Validação de gameState.dayNumber
+- ✅ localStorage separado: `archive-{dayNumber}`
+- ✅ Badge visual: "🕰️ Arquivo - Dia #X"
+- ✅ Compartilhamento marca "(Arquivo)"
+- ✅ START_DATE corrigida (01/01/2022)
 
 ---
 

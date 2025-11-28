@@ -56,6 +56,7 @@ Cada palpite revela dicas sobre as letras:
   - Separadas por modo de jogo
 
 - **Recursos adicionais:**
+  - 📅 **Arquivo de Dias Anteriores** (últimos 30 dias)
   - ⏱️ Countdown visual para próxima palavra
   - 🎨 Modo de alto contraste (acessibilidade)
   - 📤 Compartilhar resultados (grid de emojis)
@@ -202,11 +203,13 @@ term-ooo/
 │   ├── components/             # Componentes React
 │   │   ├── ui/                # shadcn/ui base components
 │   │   │   ├── button.tsx
+│   │   │   ├── calendar.tsx   # Calendar (react-day-picker)
 │   │   │   ├── dialog.tsx
 │   │   │   ├── scroll-area.tsx
 │   │   │   ├── switch.tsx
 │   │   │   └── tabs.tsx
 │   │   ├── AboutDialog.tsx    # Dialog com história épica
+│   │   ├── ArchiveDialog.tsx  # Dialog de dias anteriores (Time Machine)
 │   │   ├── DevModeDialog.tsx  # Dialog de ferramentas dev
 │   │   ├── GameBoard.tsx      # Board individual (grid 6x5)
 │   │   ├── GameLayout.tsx     # Layout responsivo dos boards
@@ -225,7 +228,8 @@ term-ooo/
 │   │   ├── words-dueto.ts     # Dicionário Dueto (2 palavras)
 │   │   └── words-quarteto.ts  # Dicionário Quarteto (4 palavras)
 │   ├── lib/                   # Utilitários gerais
-│   │   └── utils.ts           # Funções auxiliares (cn, dates)
+│   │   ├── dates.ts           # NOVO: Módulo central de datas
+│   │   └── utils.ts           # Funções auxiliares (cn, normalize)
 │   ├── App.tsx                # Componente principal (state manager)
 │   ├── main.tsx               # Entry point da aplicação
 │   ├── index.css              # Estilos globais + animações
