@@ -15,6 +15,7 @@ Cada palpite revela dicas sobre as letras:
 - 🟩 **Verde**: Letra correta na posição correta
 - 🟨 **Amarelo**: Letra correta na posição errada
 - ⬛ **Cinza**: Letra não existe na palavra
+- 🔳 **Branco**: Tile não utilizado
 
 ## ✨ Features Implementadas
 
