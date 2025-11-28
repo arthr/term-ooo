@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from './ui/dialog'
-import { ScrollArea } from './ui/scroll-area'
 import { Button } from './ui/button'
 import { Trash2, Eye, SkipForward, Trophy } from 'lucide-react'
 import { GameState } from '@/game/types'

@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from './ui/dialog'
-import { ScrollArea } from './ui/scroll-area'
 import { Switch } from './ui/switch'
 import { Settings } from '@/game/types'
 
