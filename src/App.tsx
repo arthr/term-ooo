@@ -23,7 +23,7 @@ import { ArchiveDialog } from './components/ArchiveDialog'
 function Game() {
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   const [mode, setMode] = useState<GameMode>('termo')
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
@@ -36,7 +36,7 @@ function Game() {
   const [happyRow, setHappyRow] = useState<number>(-1)
   const [happyBoards, setHappyBoards] = useState<number[]>([])
   const [customDayNumber, setCustomDayNumber] = useState<number | null>(null)
-  
+
   const [helpOpen, setHelpOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -50,24 +50,24 @@ function Game() {
     const path = location.pathname
     const searchParams = new URLSearchParams(location.search)
     const diaParam = searchParams.get('dia')
-    
+
     let newMode: GameMode = 'termo'
-    
+
     if (path === '/2' || path === '/dueto') {
       newMode = 'dueto'
     } else if (path === '/4' || path === '/quarteto') {
       newMode = 'quarteto'
     }
-    
+
     if (newMode !== mode) {
       setMode(newMode)
     }
-    
+
     // Atualizar customDayNumber a partir do query param
     if (diaParam) {
       const dayNum = parseInt(diaParam, 10)
       const currentDay = getDayNumber()
-      
+
       if (!isNaN(dayNum) && dayNum > 0) {
         // 🔒 VALIDAÇÃO: Não permitir dias futuros
         if (dayNum > currentDay) {
@@ -90,30 +90,30 @@ function Game() {
   useEffect(() => {
     const actualDayNumber = customDayNumber || getDayNumber()
     const isArchive = customDayNumber !== null
-    
+
     // Usar dateKey diferente para arquivo
-    const dateKey = isArchive 
-      ? `archive-${actualDayNumber}` 
+    const dateKey = isArchive
+      ? `archive-${actualDayNumber}`
       : getTodayDateKey()
-    
+
     const savedState = storage.getGameState(mode, dateKey)
-    
+
     // Validar se o dayNumber do estado salvo bate com o esperado
-    const isValidState = savedState 
-      && savedState.dateKey === dateKey 
+    const isValidState = savedState
+      && savedState.dateKey === dateKey
       && savedState.dayNumber === actualDayNumber  // 🆕 VALIDAÇÃO CRÍTICA!
-    
+
     if (isValidState) {
       setGameState(savedState)
       // Encontrar primeira posição vazia no array
       const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
       setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
-      
+
       // Se o jogo já está concluído, abrir TopTabs para mostrar outros modos
       if (savedState.isGameOver) {
         setTabsVisible(true)
       }
-      
+
       // Não abrir stats automaticamente ao carregar
       // Stats só abre após completar uma tentativa
     } else {
@@ -123,7 +123,7 @@ function Game() {
       storage.saveGameState(mode, dateKey, newState)
       setCursorPosition(0)
     }
-    
+
     // IMPORTANTE: Sempre recarregar stats do modo atual (stats de arquivo não contam)
     const currentModeStats = storage.getStats(mode)
     setStats(currentModeStats)
@@ -142,19 +142,19 @@ function Game() {
       if (gameState.mode !== mode) {
         return
       }
-      
+
       // NÃO atualizar stats se for arquivo
       if (customDayNumber !== null) {
         return
       }
-      
+
       const currentStats = storage.getStats(mode)
-      
+
       // Evitar atualizar estatísticas múltiplas vezes
       if (currentStats.lastGame?.dateKey === gameState.dateKey) {
         return
       }
-      
+
       const newStats: Stats = {
         gamesPlayed: currentStats.gamesPlayed + 1,
         gamesWon: currentStats.gamesWon + (gameState.isWin ? 1 : 0),
@@ -169,10 +169,10 @@ function Game() {
           dateKey: gameState.dateKey,
         },
       }
-      
+
       const attemptIndex = gameState.isWin ? gameState.currentRow - 1 : newStats.guessDistribution.length - 1
       newStats.guessDistribution[attemptIndex]++
-      
+
       storage.saveStats(mode, newStats)
       setStats(newStats)
     }
@@ -196,28 +196,28 @@ function Game() {
 
   const handleSkipToWin = () => {
     if (!gameState || gameState.isGameOver) return
-    
+
     // Criar guess perfeito para todas as boards
     const perfectGuesses = gameState.boards.map(board => board.solution)
-    
+
     // Simular guesses perfeitas até a vitória
     let currentState = gameState
     for (const solution of perfectGuesses) {
       // Preencher currentGuess com a solução
       const solutionArray = solution.split('').map(c => c.toLowerCase())
       currentState = { ...currentState, currentGuess: solutionArray }
-      
+
       // Processar a guess
       const result = processGuess(currentState, settings)
       if (!result.error) {
         currentState = result.newState
       }
     }
-    
+
     // Atualizar estado
     setGameState(currentState)
     storage.saveGameState(mode, currentState.dateKey, currentState)
-    
+
     // Abrir stats após vitória
     setTimeout(() => {
       setStatsOpen(true)
@@ -232,12 +232,12 @@ function Game() {
 
   const handleKeyPress = useCallback((key: string) => {
     if (!gameState || gameState.isGameOver) return
-    
+
     setError('')
-    
+
     if (key === 'ENTER') {
       const result = processGuess(gameState, settings)
-      
+
       if (result.error) {
         setError(result.error)
         setShouldShake(true)
@@ -249,12 +249,12 @@ function Game() {
         // Ativar animação de flip para a linha que acabou de ser submetida
         const submittedRow = gameState.currentRow
         setRevealingRow(submittedRow)
-        
+
         // Resetar revealingRow após a animação (450ms + 100ms * 4 delays = 850ms)
         setTimeout(() => {
           setRevealingRow(-1)
         }, 900)
-        
+
         // Detectar QUAIS boards foram completados NESTA jogada
         const newlyCompletedBoardIndices: number[] = []
         result.newState.boards.forEach((board, idx) => {
@@ -262,11 +262,11 @@ function Game() {
             newlyCompletedBoardIndices.push(idx)
           }
         })
-        
+
         setGameState(result.newState)
         storage.saveGameState(mode, gameState.dateKey, result.newState)
         setCursorPosition(0)
-        
+
         // Se algum board foi completado, ativar animação happy jump
         if (newlyCompletedBoardIndices.length > 0) {
           setTimeout(() => {
@@ -278,7 +278,7 @@ function Game() {
             }, 1000)
           }, 1000) // Após o flip completar
         }
-        
+
         if (result.newState.isGameOver) {
           setTimeout(() => setStatsOpen(true), newlyCompletedBoardIndices.length > 0 ? 2200 : 1200)
         }
@@ -288,7 +288,7 @@ function Game() {
       // Se posição atual tem letra: limpa ela
       // Se posição atual vazia: move cursor para trás e limpa
       let targetPos = cursorPosition
-      
+
       if (gameState.currentGuess[cursorPosition] === '') {
         // Posição atual vazia, move para trás
         if (cursorPosition > 0) {
@@ -298,11 +298,11 @@ function Game() {
           return // Já no início e vazio, nada a fazer
         }
       }
-      
+
       // Limpar a posição alvo
       const newGuess = [...gameState.currentGuess]
       newGuess[targetPos] = ''
-      
+
       setGameState({
         ...gameState,
         currentGuess: newGuess,
@@ -321,7 +321,7 @@ function Game() {
           break
         }
       }
-      
+
       if (nextEmpty !== -1) {
         setCursorPosition(nextEmpty)
       } else {
@@ -333,16 +333,16 @@ function Game() {
       if (/^[A-Z]$/.test(key) && cursorPosition < 5) {
         const newGuess = [...gameState.currentGuess]
         newGuess[cursorPosition] = key.toLowerCase()
-        
+
         // Ativar animação de digitação
         setLastTypedIndex(cursorPosition)
         setTimeout(() => setLastTypedIndex(-1), 150)
-        
+
         setGameState({
           ...gameState,
           currentGuess: newGuess,
         })
-        
+
         // Mover para próxima posição vazia (moveEditToNext)
         let nextEmpty = -1
         for (let i = 1; i < 5; i++) {
@@ -352,7 +352,7 @@ function Game() {
             break
           }
         }
-        
+
         if (nextEmpty !== -1) {
           setCursorPosition(nextEmpty)
         } else {
@@ -367,9 +367,9 @@ function Game() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (helpOpen || statsOpen || settingsOpen || devModeOpen || aboutOpen) return
-      
+
       const key = e.key.toUpperCase()
-      
+
       if (key === 'ENTER') {
         handleKeyPress('ENTER')
       } else if (key === 'BACKSPACE') {
@@ -385,7 +385,7 @@ function Game() {
         handleKeyPress(key)
       }
     }
-    
+
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyPress, helpOpen, statsOpen, settingsOpen, devModeOpen, aboutOpen])
@@ -425,7 +425,10 @@ function Game() {
   const modeTitle = mode === 'termo' ? 'TERMO' : mode === 'dueto' ? 'DUETO' : 'QUARTETO'
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col">
+    <div className="h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col">
+
+      <TopTabs currentMode={mode} onModeChange={handleModeChange} isVisible={tabsVisible} />
+
       <Header
         title={modeTitle}
         onHelp={() => setHelpOpen(true)}
@@ -438,42 +441,38 @@ function Game() {
         isArchive={customDayNumber !== null}
         archiveDayNumber={customDayNumber || undefined}
       />
-      
-      <TopTabs currentMode={mode} onModeChange={handleModeChange} isVisible={tabsVisible} />
-      
-      <main className="flex-1 container mx-auto px-4 flex flex-col">
+
+      <main className="flex-1 flex flex-col container mx-auto px-2">
         {error && (
           <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse">
             {error}
           </div>
         )}
-        
-            <div className="flex-1 flex flex-col justify-between py-4 max-w-7xl mx-auto w-full">
-              <GameLayout
-                gameState={gameState}
-                highContrast={settings.highContrast}
-                cursorPosition={cursorPosition}
-                shouldShake={shouldShake}
-                onTileClick={handleTileClick}
-                revealingRow={revealingRow}
-                lastTypedIndex={lastTypedIndex}
-                happyRow={happyRow}
-                happyBoards={happyBoards}
-              />
-          
-          <div className="pb-4">
-            <Keyboard
-              keyStates={gameState.keyStates}
-              onKeyPress={handleKeyPress}
-              highContrast={settings.highContrast}
-              disabled={gameState.isGameOver}
-            />
-          </div>
+
+        <div className="flex-1 flex flex-col justify-between mx-auto w-full">
+          <GameLayout
+            gameState={gameState}
+            highContrast={settings.highContrast}
+            cursorPosition={cursorPosition}
+            shouldShake={shouldShake}
+            onTileClick={handleTileClick}
+            revealingRow={revealingRow}
+            lastTypedIndex={lastTypedIndex}
+            happyRow={happyRow}
+            happyBoards={happyBoards}
+          />
+
+          <Keyboard
+            keyStates={gameState.keyStates}
+            onKeyPress={handleKeyPress}
+            highContrast={settings.highContrast}
+            disabled={gameState.isGameOver}
+          />
         </div>
       </main>
-      
+
       <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
-      
+
       <StatsDialog
         open={statsOpen}
         onOpenChange={(open) => {
@@ -486,7 +485,7 @@ function Game() {
         stats={stats}
         gameState={gameState}
       />
-      
+
       <SettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
@@ -523,7 +522,7 @@ function Game() {
 function App() {
   // Detectar se está em produção (GitHub Pages)
   const basename = import.meta.env.BASE_URL
-  
+
   return (
     <BrowserRouter
       basename={basename}

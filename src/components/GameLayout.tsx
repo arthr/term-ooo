@@ -14,8 +14,8 @@ interface GameLayoutProps {
   happyBoards?: number[]
 }
 
-export function GameLayout({ 
-  gameState, 
+export function GameLayout({
+  gameState,
   highContrast = false,
   cursorPosition = 0,
   shouldShake = false,
@@ -29,8 +29,9 @@ export function GameLayout({
 
   if (mode === 'termo') {
     return (
-      <div className="flex justify-center items-center py-4">
+      <div className="w-full flex justify-center py-4 px-2">
         <GameBoard
+          className="w-11/12 md:max-w-xs"
           board={boards[0]}
           currentGuess={currentGuess}
           currentRow={currentRow}
@@ -49,7 +50,7 @@ export function GameLayout({
 
   if (mode === 'dueto') {
     return (
-      <div className="flex justify-center items-center gap-4 py-4 flex-wrap">
+      <div className="flex justify-center py-4 space-x-3 md:space-x-8">
         <GameBoard
           board={boards[0]}
           currentGuess={currentGuess}
@@ -82,62 +83,60 @@ export function GameLayout({
 
   // Quarteto
   return (
-    <div className="flex flex-col items-center gap-4 py-4">
-      <div className="flex justify-center gap-6 flex-wrap">
-        <GameBoard
-          board={boards[0]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(0) ? happyRow : -1}
-        />
-        <GameBoard
-          board={boards[1]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(1) ? happyRow : -1}
-        />
-        <GameBoard
-          board={boards[2]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(2) ? happyRow : -1}
-        />
-        <GameBoard
-          board={boards[3]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(3) ? happyRow : -1}
-        />
+      <div className="grid grid-cols-2 md:flex md:w-11/12 w-10/12 pt-4 justify-between items-center gap-x-4 gap-y-2 mx-auto">
+      <GameBoard
+        board={boards[0]}
+        currentGuess={currentGuess}
+        currentRow={currentRow}
+        maxAttempts={maxAttempts}
+        highContrast={highContrast}
+        cursorPosition={cursorPosition}
+        shouldShake={shouldShake}
+        onTileClick={onTileClick}
+        revealingRow={revealingRow}
+        lastTypedIndex={lastTypedIndex}
+        happyRow={happyBoards.includes(0) ? happyRow : -1}
+      />
+      <GameBoard
+        board={boards[1]}
+        currentGuess={currentGuess}
+        currentRow={currentRow}
+        maxAttempts={maxAttempts}
+        highContrast={highContrast}
+        cursorPosition={cursorPosition}
+        shouldShake={shouldShake}
+        onTileClick={onTileClick}
+        revealingRow={revealingRow}
+        lastTypedIndex={lastTypedIndex}
+        happyRow={happyBoards.includes(1) ? happyRow : -1}
+      />
+      <GameBoard
+        board={boards[2]}
+        currentGuess={currentGuess}
+        currentRow={currentRow}
+        maxAttempts={maxAttempts}
+        highContrast={highContrast}
+        cursorPosition={cursorPosition}
+        shouldShake={shouldShake}
+        onTileClick={onTileClick}
+        revealingRow={revealingRow}
+        lastTypedIndex={lastTypedIndex}
+        happyRow={happyBoards.includes(2) ? happyRow : -1}
+      />
+      <GameBoard
+        board={boards[3]}
+        currentGuess={currentGuess}
+        currentRow={currentRow}
+        maxAttempts={maxAttempts}
+        highContrast={highContrast}
+        cursorPosition={cursorPosition}
+        shouldShake={shouldShake}
+        onTileClick={onTileClick}
+        revealingRow={revealingRow}
+        lastTypedIndex={lastTypedIndex}
+        happyRow={happyBoards.includes(3) ? happyRow : -1}
+      />
       </div>
-    </div>
   )
 }
 

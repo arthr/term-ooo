@@ -4,6 +4,7 @@ import { Tile } from './Tile'
 import { cn } from '@/lib/utils'
 
 interface GameBoardProps {
+  className?: string
   board: Board
   currentGuess: string | string[] // Suportar tanto string quanto array
   currentRow: number
@@ -18,6 +19,7 @@ interface GameBoardProps {
 }
 
 export function GameBoard({
+  className,
   board,
   currentGuess,
   currentRow,
@@ -41,7 +43,7 @@ export function GameBoard({
     rows.push(
       <div 
         key={i} 
-        className="flex gap-1 justify-center relative"
+        className="grid grid-cols-5 gap-1 justify-center relative"
         style={{ zIndex: isHappyJump ? 100 : 'auto' }}
       >
         {guess.tiles.map((tile, j) => (
@@ -81,7 +83,7 @@ export function GameBoard({
       <div 
         key={currentRow} 
         className={cn(
-          "flex gap-1 justify-center",
+          "grid grid-cols-5 gap-1 justify-center",
           shouldShake && "animate-shake"
         )}
       >
@@ -94,7 +96,7 @@ export function GameBoard({
   const remainingRows = maxAttempts - rows.length
   for (let i = 0; i < remainingRows; i++) {
     rows.push(
-      <div key={board.guesses.length + i + 1} className="flex gap-1 justify-center">
+      <div key={board.guesses.length + i + 1} className="grid grid-cols-5 gap-1 justify-center">
         {Array(5)
           .fill(0)
           .map((_, j) => (
@@ -105,7 +107,7 @@ export function GameBoard({
   }
 
   return (
-    <div className={cn('flex flex-col gap-1', board.isComplete && 'opacity-90')}>
+    <div className={cn('flex flex-col gap-1', className, board.isComplete && 'opacity-90')}>
       {rows}
     </div>
   )

@@ -49,7 +49,7 @@ export function Tile({
     <div
       onClick={onClick}
       className={cn(
-        'size-10 md:size-12 flex items-center justify-center text-2xl font-bold rounded-md',
+        'aspect-square md:min-w-14 md:min-h-14 flex items-center justify-center font-extrabold rounded-md',
         !isFlipping && stateClasses[state],
         isEditing && 'border-b-4 !border-b-gray-400',
         onClick && 'cursor-pointer hover:scale-105',
@@ -60,6 +60,7 @@ export function Tile({
       style={{
         animationDelay: (isFlipping || isHappy) ? `${animationDelay}ms` : undefined,
         '--tile-color': getTileColor(),
+        fontSize: 'clamp(1rem, 5cqw, 2rem)',
       } as React.CSSProperties}
     >
       {letter.toUpperCase()}
