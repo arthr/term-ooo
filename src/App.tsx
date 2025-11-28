@@ -459,6 +459,7 @@ function Game() {
 function App() {
   return (
     <BrowserRouter
+      basename="/term-ooo"
       future={{
         v7_startTransition: true,
         v7_relativeSplatPath: true,
