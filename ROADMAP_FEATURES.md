@@ -29,7 +29,49 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 2. 🖼️ Compartilhamento Rico (Imagem)
+### 2. 📅 Arquivo de Dias Anteriores (Time Machine)
+**Status:** 📋 Planejado
+
+**Descrição:**
+- Jogar desafios de dias anteriores
+- Seletor de data (calendário ou input)
+- Indicador visual "Você está jogando o dia #X"
+- Estatísticas separadas (ou marcadas como "Arquivo")
+- Não conta para streak do dia atual
+
+**Benefícios:**
+- **MUITO demandado pela comunidade** (similar ao Wordle Archive)
+- Permite jogadores novos experimentarem palavras antigas
+- Perfeito para quem perdeu dias ou quer praticar específicos
+- Aumenta drasticamente o engajamento e tempo no app
+- Possibilita "maratonas" de múltiplos dias
+
+**Complexidade:** ⭐⭐ Média
+
+**Implementação sugerida:**
+- Usar query param: `/termo?dia=123` ou `/termo/arquivo/123`
+- Modificar `getDailyWords()` para aceitar `dayNumber` customizado
+- UI: Botão "📅 Arquivo" no Header
+- Dialog com calendário ou lista de dias
+- Badge visual: "🕰️ Dia #123 - Arquivo"
+- localStorage separado: `archive-termo-123`, `archive-dueto-123`, etc.
+
+**Arquivos a modificar:**
+- `src/App.tsx` - Ler query param `?dia=X` e passar para engine
+- `src/game/engine.ts` - `getDailyWords(mode, customDay?)` 
+- `src/components/Header.tsx` - Novo botão "Arquivo"
+- Novo: `src/components/ArchiveDialog.tsx` - Seletor de dias
+- `src/game/storage.ts` - Namespace separado para stats de arquivo
+
+**Considerações:**
+- Stats de arquivo NÃO contam para streak principal
+- Compartilhamento deve indicar "Arquivo - Dia #X"
+- Limite opcional: ex. "últimos 365 dias"
+- Desabilitar "Hard Mode" warning em arquivos (opcional)
+
+---
+
+### 3. 🖼️ Compartilhamento Rico (Imagem)
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -57,7 +99,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ## 🎯 Prioridade Média
 
-### 3. 📊 Estatísticas Avançadas
+### 4. 📊 Estatísticas Avançadas
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -80,7 +122,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 4. 🌈 Temas Customizáveis
+### 5. 🌈 Temas Customizáveis
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -103,7 +145,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 5. 🎯 Modo 6 Letras
+### 6. 🎯 Modo 6 Letras
 **Status:** 📋 Planejado
 
 **Descrição:**
@@ -126,7 +168,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ## 🎯 Prioridade Baixa
 
-### 6. 🏅 Sistema de Conquistas
+### 7. 🏅 Sistema de Conquistas
 **Status:** 💭 Ideia
 
 **Descrição:**
@@ -143,7 +185,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 7. 🌍 Múltiplos Idiomas
+### 8. 🌍 Múltiplos Idiomas
 **Status:** 💭 Ideia
 
 **Descrição:**
@@ -155,7 +197,7 @@ Features bônus sugeridas para expansão do Term.ooo Clone.
 
 ---
 
-### 8. 👥 Modo Multiplayer/Competitivo
+### 9. 👥 Modo Multiplayer/Competitivo
 **Status:** 💭 Ideia
 
 **Descrição:**
