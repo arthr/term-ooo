@@ -457,9 +457,12 @@ function Game() {
 }
 
 function App() {
+  // Detectar se está em produção (GitHub Pages)
+  const basename = import.meta.env.BASE_URL
+  
   return (
     <BrowserRouter
-      basename="/term-ooo"
+      basename={basename}
       future={{
         v7_startTransition: true,
         v7_relativeSplatPath: true,

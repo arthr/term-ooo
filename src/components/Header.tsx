@@ -39,7 +39,7 @@ export function Header({ title, onHelp, onStats, onSettings, onAbout, onToggleTa
       {/* Áudio do Bodão (oculto) */}
       <audio
         ref={audioRef}
-        src="/assets/mp3/bodao.mp3"
+        src={`${import.meta.env.BASE_URL}assets/mp3/bodao.mp3`}
         onEnded={handleAudioEnded}
         preload="auto"
       />
