@@ -2,11 +2,11 @@
 // 🕐 MÓDULO CENTRAL DE DATAS
 // Todas as operações de data/hora da aplicação devem usar estas funções
 
-// Data inicial do Term.ooo: 2 de janeiro de 2022 às 00:00 (horário de São Paulo)
-// Usando UTC-3 para garantir consistência
+// Data inicial do Term.ooo: 1 de janeiro de 2022 às 00:00 (horário de São Paulo)
+// Corrigido após análise dos logs: START_DAY = 1 (não 2)
 const START_YEAR = 2022
 const START_MONTH = 0 // Janeiro (0-indexed)
-const START_DAY = 2
+const START_DAY = 1
 
 /**
  * Obtém a data de HOJE normalizada (00:00:00 local)

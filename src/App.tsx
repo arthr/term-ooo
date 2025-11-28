@@ -66,8 +66,18 @@ function Game() {
     // Atualizar customDayNumber a partir do query param
     if (diaParam) {
       const dayNum = parseInt(diaParam, 10)
+      const currentDay = getDayNumber()
+      
       if (!isNaN(dayNum) && dayNum > 0) {
-        setCustomDayNumber(dayNum)
+        // 🔒 VALIDAÇÃO: Não permitir dias futuros
+        if (dayNum > currentDay) {
+          // Remove query param e volta para o dia atual
+          const cleanPath = path || '/'
+          navigate(cleanPath, { replace: true })
+          setCustomDayNumber(null)
+        } else {
+          setCustomDayNumber(dayNum)
+        }
       } else {
         setCustomDayNumber(null)
       }
@@ -88,7 +98,12 @@ function Game() {
     
     const savedState = storage.getGameState(mode, dateKey)
     
-    if (savedState && savedState.dateKey === dateKey) {
+    // Validar se o dayNumber do estado salvo bate com o esperado
+    const isValidState = savedState 
+      && savedState.dateKey === dateKey 
+      && savedState.dayNumber === actualDayNumber  // 🆕 VALIDAÇÃO CRÍTICA!
+    
+    if (isValidState) {
       setGameState(savedState)
       // Encontrar primeira posição vazia no array
       const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
@@ -102,6 +117,7 @@ function Game() {
       // Não abrir stats automaticamente ao carregar
       // Stats só abre após completar uma tentativa
     } else {
+      // Recriar o estado se não existir OU se dayNumber não bater
       const newState = createInitialGameState(mode, actualDayNumber, dateKey)
       setGameState(newState)
       storage.saveGameState(mode, dateKey, newState)

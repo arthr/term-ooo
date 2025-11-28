@@ -73,7 +73,7 @@ export function ArchiveDialog({ open, onOpenChange, currentMode }: ArchiveDialog
             <DialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-orange-600 p-0">
                 <DialogHeader className="px-6 pt-6 pb-2">
                     <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-orange-400 to-yellow-500 bg-clip-text text-transparent">
-                        Arquivo de Dias Anteriores
+                        Histórico de Palavras
                     </DialogTitle>
                     <DialogDescription className="sr-only">
                         Escolha um dia anterior para jogar. Limite: últimos {MAX_DAYS_BACK} dias.
