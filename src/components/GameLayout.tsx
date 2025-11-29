@@ -27,116 +27,35 @@ export function GameLayout({
 }: GameLayoutProps) {
   const { mode, boards, currentGuess, currentRow, maxAttempts } = gameState
 
-  if (mode === 'termo') {
-    return (
-      <div className="w-full flex justify-center py-4 px-2">
-        <GameBoard
-          className="w-11/12 md:max-w-xs"
-          board={boards[0]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(0) ? happyRow : -1}
-        />
-      </div>
-    )
-  }
+  const containerClassName =
+    mode === 'termo'
+      ? 'w-full flex justify-center py-4 px-2'
+      : mode === 'dueto'
+        ? 'flex justify-center py-4 space-x-3 md:space-x-8'
+        : 'grid grid-cols-2 md:flex md:w-11/12 w-10/12 pt-4 justify-between items-center gap-x-4 gap-y-2 mx-auto'
 
-  if (mode === 'dueto') {
-    return (
-      <div className="flex justify-center py-4 space-x-3 md:space-x-8">
-        <GameBoard
-          board={boards[0]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(0) ? happyRow : -1}
-        />
-        <GameBoard
-          board={boards[1]}
-          currentGuess={currentGuess}
-          currentRow={currentRow}
-          maxAttempts={maxAttempts}
-          highContrast={highContrast}
-          cursorPosition={cursorPosition}
-          shouldShake={shouldShake}
-          onTileClick={onTileClick}
-          revealingRow={revealingRow}
-          lastTypedIndex={lastTypedIndex}
-          happyRow={happyBoards.includes(1) ? happyRow : -1}
-        />
-      </div>
-    )
-  }
+  const boardClassName = mode === 'termo' ? 'w-11/12 md:max-w-xs' : undefined
 
-  // Quarteto
   return (
-      <div className="grid grid-cols-2 md:flex md:w-11/12 w-10/12 pt-4 justify-between items-center gap-x-4 gap-y-2 mx-auto">
-      <GameBoard
-        board={boards[0]}
-        currentGuess={currentGuess}
-        currentRow={currentRow}
-        maxAttempts={maxAttempts}
-        highContrast={highContrast}
-        cursorPosition={cursorPosition}
-        shouldShake={shouldShake}
-        onTileClick={onTileClick}
-        revealingRow={revealingRow}
-        lastTypedIndex={lastTypedIndex}
-        happyRow={happyBoards.includes(0) ? happyRow : -1}
-      />
-      <GameBoard
-        board={boards[1]}
-        currentGuess={currentGuess}
-        currentRow={currentRow}
-        maxAttempts={maxAttempts}
-        highContrast={highContrast}
-        cursorPosition={cursorPosition}
-        shouldShake={shouldShake}
-        onTileClick={onTileClick}
-        revealingRow={revealingRow}
-        lastTypedIndex={lastTypedIndex}
-        happyRow={happyBoards.includes(1) ? happyRow : -1}
-      />
-      <GameBoard
-        board={boards[2]}
-        currentGuess={currentGuess}
-        currentRow={currentRow}
-        maxAttempts={maxAttempts}
-        highContrast={highContrast}
-        cursorPosition={cursorPosition}
-        shouldShake={shouldShake}
-        onTileClick={onTileClick}
-        revealingRow={revealingRow}
-        lastTypedIndex={lastTypedIndex}
-        happyRow={happyBoards.includes(2) ? happyRow : -1}
-      />
-      <GameBoard
-        board={boards[3]}
-        currentGuess={currentGuess}
-        currentRow={currentRow}
-        maxAttempts={maxAttempts}
-        highContrast={highContrast}
-        cursorPosition={cursorPosition}
-        shouldShake={shouldShake}
-        onTileClick={onTileClick}
-        revealingRow={revealingRow}
-        lastTypedIndex={lastTypedIndex}
-        happyRow={happyBoards.includes(3) ? happyRow : -1}
-      />
-      </div>
+    <div className={containerClassName}>
+      {boards.map((board, index) => (
+        <GameBoard
+          key={`${board.solution}-${index}`}
+          className={boardClassName}
+          board={board}
+          currentGuess={currentGuess}
+          currentRow={currentRow}
+          maxAttempts={maxAttempts}
+          highContrast={highContrast}
+          cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
+          onTileClick={onTileClick}
+          revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyBoards.includes(index) ? happyRow : -1}
+        />
+      ))}
+    </div>
   )
 }
 

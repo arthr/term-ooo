@@ -1,15 +1,9 @@
 // src/components/HelpDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 import { Tile } from './Tile'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
+import { DialogShell } from './DialogShell'
 
 interface HelpDialogProps {
   open: boolean
@@ -24,18 +18,15 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
   })
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-blue-600 max-h-[85vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
-            Como Jogar
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Instruções sobre como jogar Termo, Dueto e Quarteto
-          </DialogDescription>
-        </DialogHeader>
-        
-        <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
+    <DialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Como Jogar"
+      description="Instruções sobre como jogar Termo, Dueto e Quarteto"
+      borderColor="border-blue-600"
+      titleGradientClassName="bg-gradient-to-r from-blue-400 to-cyan-500"
+    >
+      <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
           <AnimatePresence>
             {open && (
               <motion.div
@@ -108,9 +99,8 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
               </motion.div>
             )}
           </AnimatePresence>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+      </ScrollArea>
+    </DialogShell>
   )
 }
 

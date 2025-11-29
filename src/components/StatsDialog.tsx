@@ -1,13 +1,6 @@
 // src/components/StatsDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
 import Countdown from 'react-countdown'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
@@ -16,6 +9,7 @@ import { Share2, Check } from 'lucide-react'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 import { useTemporaryState } from '@/hooks/useTemporaryState'
 import { getNextMidnightTimestamp } from '@/lib/dates'
+import { DialogShell } from './DialogShell'
 
 interface StatsDialogProps {
   open: boolean
@@ -66,18 +60,15 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
   const { containerVariants, itemVariants } = useDialogAnimations()
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-yellow-600 max-h-[85vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-            Estatísticas
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Estatísticas do jogo, distribuição de tentativas e próxima palavra
-          </DialogDescription>
-        </DialogHeader>
-        
-        <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
+    <DialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Estatísticas"
+      description="Estatísticas do jogo, distribuição de tentativas e próxima palavra"
+      borderColor="border-yellow-600"
+      titleGradientClassName="bg-gradient-to-r from-yellow-400 to-orange-500"
+    >
+      <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
           <AnimatePresence>
             {open && (
               <motion.div
@@ -191,9 +182,8 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
               </motion.div>
             )}
           </AnimatePresence>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+      </ScrollArea>
+    </DialogShell>
   )
 }
 
