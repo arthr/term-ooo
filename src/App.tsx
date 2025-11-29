@@ -1,13 +1,8 @@
 // src/App.tsx
 import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { GameMode, GameState, Settings, Stats } from './game/types'
-import { getTodayDateKey } from './lib/utils'
-import {
-  createInitialGameState,
-  getDayNumber,
-  processGuess,
-} from './game/engine'
+import { GameMode, Settings } from './game/types'
+import { processGuess } from './game/engine'
 import { storage } from './game/storage'
 import { Header } from './components/Header'
 import { TopTabs } from './components/TopTabs'
@@ -22,18 +17,19 @@ import { ArchiveDialog } from './components/ArchiveDialog'
 import { useDialogManager } from './hooks/useDialogManager'
 import { useGameAnimations } from './hooks/useGameAnimations'
 import { useKeyboardInput } from './hooks/useKeyboardInput'
+import { useGameMode } from './hooks/useGameMode'
+import { usePersistentGameState } from './hooks/usePersistentGameState'
+import { useStatsTracker } from './hooks/useStatsTracker'
 
 function Game() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [mode, setMode] = useState<GameMode>('termo')
-  const [gameState, setGameState] = useState<GameState | null>(null)
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
-  const [stats, setStats] = useState<Stats | null>(null)
   const [error, setError] = useState<string>('')
-  const [customDayNumber, setCustomDayNumber] = useState<number | null>(null)
   const [tabsVisible, setTabsVisible] = useState(false)
+
+  const { mode, customDayNumber } = useGameMode({ location, navigate })
 
   // Gerenciamento unificado de dialogs
   const dialogManager = useDialogManager()
@@ -49,138 +45,20 @@ function Game() {
     actions: animActions
   } = useGameAnimations()
 
-  // Determinar modo pela URL e query params
-  useEffect(() => {
-    const path = location.pathname
-    const searchParams = new URLSearchParams(location.search)
-    const diaParam = searchParams.get('dia')
+  const { gameState, setGameState, stats, setStats } = usePersistentGameState({
+    mode,
+    customDayNumber,
+    animActions,
+    onCompletedGameLoad: () => setTabsVisible(true)
+  })
 
-    let newMode: GameMode = 'termo'
-
-    if (path === '/2' || path === '/dueto') {
-      newMode = 'dueto'
-    } else if (path === '/4' || path === '/quarteto') {
-      newMode = 'quarteto'
-    }
-
-    if (newMode !== mode) {
-      setMode(newMode)
-    }
-
-    // Atualizar customDayNumber a partir do query param
-    if (diaParam) {
-      const dayNum = parseInt(diaParam, 10)
-      const currentDay = getDayNumber()
-
-      if (!isNaN(dayNum) && dayNum > 0) {
-        // 🔒 VALIDAÇÃO: Não permitir dias futuros
-        if (dayNum > currentDay) {
-          // Remove query param e volta para o dia atual
-          const cleanPath = path || '/'
-          navigate(cleanPath, { replace: true })
-          setCustomDayNumber(null)
-        } else {
-          setCustomDayNumber(dayNum)
-        }
-      } else {
-        setCustomDayNumber(null)
-      }
-    } else {
-      setCustomDayNumber(null)
-    }
-  }, [location.pathname, location.search, navigate, mode])
-
-  // Carregar ou criar estado do jogo
-  useEffect(() => {
-    const actualDayNumber = customDayNumber || getDayNumber()
-    const isArchive = customDayNumber !== null
-
-    // Usar dateKey diferente para arquivo
-    const dateKey = isArchive
-      ? `archive-${actualDayNumber}`
-      : getTodayDateKey()
-
-    const savedState = storage.getGameState(mode, dateKey)
-
-    // Validar se o dayNumber do estado salvo bate com o esperado
-    const isValidState = savedState
-      && savedState.dateKey === dateKey
-      && savedState.dayNumber === actualDayNumber  // 🆕 VALIDAÇÃO CRÍTICA!
-
-    if (isValidState) {
-      setGameState(savedState)
-      // Encontrar primeira posição vazia no array
-      const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
-      animActions.setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
-
-      // Se o jogo já está concluído, abrir TopTabs para mostrar outros modos
-      if (savedState.isGameOver) {
-        setTabsVisible(true)
-      }
-
-      // Não abrir stats automaticamente ao carregar
-      // Stats só abre após completar uma tentativa
-    } else {
-      // Recriar o estado se não existir OU se dayNumber não bater
-      const newState = createInitialGameState(mode, actualDayNumber, dateKey)
-      setGameState(newState)
-      storage.saveGameState(mode, dateKey, newState)
-      animActions.setCursorPosition(0)
-    }
-
-    // IMPORTANTE: Sempre recarregar stats do modo atual (stats de arquivo não contam)
-    const currentModeStats = storage.getStats(mode)
-    setStats(currentModeStats)
-  }, [mode, customDayNumber, animActions])
+  useStatsTracker({ gameState, mode, customDayNumber, setStats })
 
   // Salvar configurações
   useEffect(() => {
     storage.saveSettings(settings)
   }, [settings])
 
-  // Atualizar stats quando o jogo termina
-  useEffect(() => {
-    if (gameState && gameState.isGameOver && gameState.currentRow > 0) {
-      // IMPORTANTE: Verificar se o modo do gameState corresponde ao modo atual
-      // para evitar salvar stats no modo errado
-      if (gameState.mode !== mode) {
-        return
-      }
-
-      // NÃO atualizar stats se for arquivo
-      if (customDayNumber !== null) {
-        return
-      }
-
-      const currentStats = storage.getStats(mode)
-
-      // Evitar atualizar estatísticas múltiplas vezes
-      if (currentStats.lastGame?.dateKey === gameState.dateKey) {
-        return
-      }
-
-      const newStats: Stats = {
-        gamesPlayed: currentStats.gamesPlayed + 1,
-        gamesWon: currentStats.gamesWon + (gameState.isWin ? 1 : 0),
-        currentStreak: gameState.isWin ? currentStats.currentStreak + 1 : 0,
-        maxStreak: gameState.isWin
-          ? Math.max(currentStats.currentStreak + 1, currentStats.maxStreak)
-          : currentStats.maxStreak,
-        guessDistribution: [...currentStats.guessDistribution],
-        lastGame: {
-          won: gameState.isWin,
-          attempts: gameState.currentRow,
-          dateKey: gameState.dateKey,
-        },
-      }
-
-      const attemptIndex = gameState.isWin ? gameState.currentRow - 1 : newStats.guessDistribution.length - 1
-      newStats.guessDistribution[attemptIndex]++
-
-      storage.saveStats(mode, newStats)
-      setStats(newStats)
-    }
-  }, [gameState, mode, customDayNumber])
 
   const handleModeChange = (newMode: GameMode) => {
     if (newMode === 'termo') {

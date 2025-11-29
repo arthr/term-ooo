@@ -6,3 +6,4 @@
 - StatsDialog agora exibe valores padrão enquanto estatísticas não estão disponíveis, evitando desaparecimento do diálogo.
 - Corrigida configuração do ESLint para reconhecer globais do browser e de scripts Node, eliminando falsos positivos de `no-undef`.
 - Incluídas dependências faltantes em hooks e anotada exceção para o utilitário de botão, garantindo lint limpo com `pnpm lint`.
+- Extraídos hooks para modo/estado/estatísticas, generalizado layout de tabuleiros e criado shell reutilizável para diálogos.
