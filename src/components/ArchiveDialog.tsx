@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { GameMode } from '@/game/types'
 import { getDayNumber, getDateFromDayNumber, getDayNumberFromDate } from '@/game/engine'
 import { getTodayNormalized } from '@/lib/dates'
+import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 
 interface ArchiveDialogProps {
     open: boolean
@@ -48,25 +49,10 @@ export function ArchiveDialog({ open, onOpenChange, currentMode }: ArchiveDialog
 
     const selectedDayNumber = selectedDate ? getDayNumberFromDate(selectedDate) : null
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.05,
-            },
-        },
-    }
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.4 },
-        },
-    }
+    const { containerVariants, itemVariants } = useDialogAnimations({
+        staggerDelay: 0.1,
+        itemDuration: 0.4,
+    })
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

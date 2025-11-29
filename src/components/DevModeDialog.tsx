@@ -1,5 +1,4 @@
 // src/components/DevModeDialog.tsx
-import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Dialog,
@@ -11,6 +10,8 @@ import {
 import { Button } from './ui/button'
 import { Trash2, Eye, SkipForward, Trophy } from 'lucide-react'
 import { GameState } from '@/game/types'
+import { useDialogAnimations } from '@/hooks/useDialogAnimations'
+import { useTemporaryState } from '@/hooks/useTemporaryState'
 
 interface DevModeDialogProps {
   open: boolean
@@ -27,38 +28,20 @@ export function DevModeDialog({
   onResetLocalStorage,
   onSkipToWin,
 }: DevModeDialogProps) {
-  const [confirmReset, setConfirmReset] = useState(false)
+  const [confirmReset, setConfirmTemporary] = useTemporaryState()
 
   const handleResetClick = () => {
     if (!confirmReset) {
-      setConfirmReset(true)
-      setTimeout(() => setConfirmReset(false), 3000)
+      setConfirmTemporary(3000)
     } else {
       onResetLocalStorage()
-      setConfirmReset(false)
       onOpenChange(false)
     }
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.05,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.3 },
-    },
-  }
+  const { containerVariants, itemVariants } = useDialogAnimations({
+    staggerDelay: 0.1,
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

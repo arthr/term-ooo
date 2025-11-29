@@ -9,6 +9,7 @@ import {
 } from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 import { Tile } from './Tile'
+import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 
 interface HelpDialogProps {
   open: boolean
@@ -16,25 +17,11 @@ interface HelpDialogProps {
 }
 
 export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.05,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4 },
-    },
-  }
+  const { containerVariants, itemVariants } = useDialogAnimations({
+    staggerDelay: 0.1,
+    childrenDelay: 0.05,
+    itemDuration: 0.4,
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

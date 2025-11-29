@@ -19,6 +19,9 @@ import { SettingsDialog } from './components/SettingsDialog'
 import { DevModeDialog } from './components/DevModeDialog'
 import { AboutDialog } from './components/AboutDialog'
 import { ArchiveDialog } from './components/ArchiveDialog'
+import { useDialogManager } from './hooks/useDialogManager'
+import { useGameAnimations } from './hooks/useGameAnimations'
+import { useKeyboardInput } from './hooks/useKeyboardInput'
 
 function Game() {
   const navigate = useNavigate()
@@ -29,21 +32,22 @@ function Game() {
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
   const [stats, setStats] = useState<Stats | null>(null)
   const [error, setError] = useState<string>('')
-  const [cursorPosition, setCursorPosition] = useState<number>(0)
-  const [shouldShake, setShouldShake] = useState<boolean>(false)
-  const [revealingRow, setRevealingRow] = useState<number>(-1)
-  const [lastTypedIndex, setLastTypedIndex] = useState<number>(-1)
-  const [happyRow, setHappyRow] = useState<number>(-1)
-  const [happyBoards, setHappyBoards] = useState<number[]>([])
   const [customDayNumber, setCustomDayNumber] = useState<number | null>(null)
-
-  const [helpOpen, setHelpOpen] = useState(false)
-  const [statsOpen, setStatsOpen] = useState(false)
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [devModeOpen, setDevModeOpen] = useState(false)
-  const [aboutOpen, setAboutOpen] = useState(false)
-  const [archiveOpen, setArchiveOpen] = useState(false)
   const [tabsVisible, setTabsVisible] = useState(false)
+
+  // Gerenciamento unificado de dialogs
+  const dialogManager = useDialogManager()
+
+  // Gerenciamento unificado de animações
+  const {
+    cursorPosition,
+    shouldShake,
+    revealingRow,
+    lastTypedIndex,
+    happyRow,
+    happyBoards,
+    actions: animActions
+  } = useGameAnimations()
 
   // Determinar modo pela URL e query params
   useEffect(() => {
@@ -84,7 +88,7 @@ function Game() {
     } else {
       setCustomDayNumber(null)
     }
-  }, [location.pathname, location.search])
+  }, [location.pathname, location.search, navigate, mode])
 
   // Carregar ou criar estado do jogo
   useEffect(() => {
@@ -107,7 +111,7 @@ function Game() {
       setGameState(savedState)
       // Encontrar primeira posição vazia no array
       const firstEmpty = savedState.currentGuess.findIndex(c => c === '')
-      setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
+      animActions.setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
 
       // Se o jogo já está concluído, abrir TopTabs para mostrar outros modos
       if (savedState.isGameOver) {
@@ -121,13 +125,13 @@ function Game() {
       const newState = createInitialGameState(mode, actualDayNumber, dateKey)
       setGameState(newState)
       storage.saveGameState(mode, dateKey, newState)
-      setCursorPosition(0)
+      animActions.setCursorPosition(0)
     }
 
     // IMPORTANTE: Sempre recarregar stats do modo atual (stats de arquivo não contam)
     const currentModeStats = storage.getStats(mode)
     setStats(currentModeStats)
-  }, [mode, customDayNumber])
+  }, [mode, customDayNumber, animActions])
 
   // Salvar configurações
   useEffect(() => {
@@ -176,7 +180,7 @@ function Game() {
       storage.saveStats(mode, newStats)
       setStats(newStats)
     }
-  }, [gameState?.isGameOver, gameState?.mode, mode])
+  }, [gameState, mode, customDayNumber])
 
   const handleModeChange = (newMode: GameMode) => {
     if (newMode === 'termo') {
@@ -220,175 +224,77 @@ function Game() {
 
     // Abrir stats após vitória
     setTimeout(() => {
-      setStatsOpen(true)
-      setDevModeOpen(false)
+      dialogManager.dialogs.stats.onOpen()
     }, 500)
   }
 
   const handleTileClick = useCallback((position: number) => {
     if (!gameState || gameState.isGameOver) return
-    setCursorPosition(position)
+    animActions.setCursorPosition(position)
+  }, [gameState, animActions])
+
+  // Handler para atualizar currentGuess
+  const handleGuessChange = useCallback((newGuess: string[]) => {
+    if (!gameState) return
+    setGameState({
+      ...gameState,
+      currentGuess: newGuess,
+    })
   }, [gameState])
 
-  const handleKeyPress = useCallback((key: string) => {
-    if (!gameState || gameState.isGameOver) return
+  // Handler para submeter guess (ENTER)
+  const handleSubmitGuess = useCallback(() => {
+    if (!gameState) return
 
-    setError('')
+    const result = processGuess(gameState, settings)
 
-    if (key === 'ENTER') {
-      const result = processGuess(gameState, settings)
-
-      if (result.error) {
-        setError(result.error)
-        setShouldShake(true)
-        setTimeout(() => {
-          setError('')
-          setShouldShake(false)
-        }, 500)
-      } else {
-        // Ativar animação de flip para a linha que acabou de ser submetida
-        const submittedRow = gameState.currentRow
-        setRevealingRow(submittedRow)
-
-        // Resetar revealingRow após a animação (450ms + 100ms * 4 delays = 850ms)
-        setTimeout(() => {
-          setRevealingRow(-1)
-        }, 900)
-
-        // Detectar QUAIS boards foram completados NESTA jogada
-        const newlyCompletedBoardIndices: number[] = []
-        result.newState.boards.forEach((board, idx) => {
-          if (board.isComplete && !gameState.boards[idx].isComplete) {
-            newlyCompletedBoardIndices.push(idx)
-          }
-        })
-
-        setGameState(result.newState)
-        storage.saveGameState(mode, gameState.dateKey, result.newState)
-        setCursorPosition(0)
-
-        // Se algum board foi completado, ativar animação happy jump
-        if (newlyCompletedBoardIndices.length > 0) {
-          setTimeout(() => {
-            setHappyRow(submittedRow)
-            setHappyBoards(newlyCompletedBoardIndices)
-            setTimeout(() => {
-              setHappyRow(-1)
-              setHappyBoards([])
-            }, 1000)
-          }, 1000) // Após o flip completar
-        }
-
-        if (result.newState.isGameOver) {
-          setTimeout(() => setStatsOpen(true), newlyCompletedBoardIndices.length > 0 ? 2200 : 1200)
-        }
-      }
-    } else if (key === 'BACKSPACE') {
-      // Comportamento igual ao original:
-      // Se posição atual tem letra: limpa ela
-      // Se posição atual vazia: move cursor para trás e limpa
-      let targetPos = cursorPosition
-
-      if (gameState.currentGuess[cursorPosition] === '') {
-        // Posição atual vazia, move para trás
-        if (cursorPosition > 0) {
-          targetPos = cursorPosition - 1
-          setCursorPosition(targetPos)
-        } else {
-          return // Já no início e vazio, nada a fazer
-        }
-      }
-
-      // Limpar a posição alvo
-      const newGuess = [...gameState.currentGuess]
-      newGuess[targetPos] = ''
-
-      setGameState({
-        ...gameState,
-        currentGuess: newGuess,
-      })
-    } else if (key === 'ARROWLEFT') {
-      setCursorPosition(Math.max(0, cursorPosition - 1))
-    } else if (key === 'ARROWRIGHT') {
-      setCursorPosition(Math.min(4, cursorPosition + 1))
-    } else if (key === ' ') {
-      // Buscar próxima posição vazia (space = moveEditToNext)
-      let nextEmpty = -1
-      for (let i = 1; i < 5; i++) {
-        const pos = (cursorPosition + i) % 5
-        if (gameState.currentGuess[pos] === '') {
-          nextEmpty = pos
-          break
-        }
-      }
-
-      if (nextEmpty !== -1) {
-        setCursorPosition(nextEmpty)
-      } else {
-        // Todas posições cheias, move para posição 5 (fora)
-        setCursorPosition(5)
-      }
+    if (result.error) {
+      setError(result.error)
+      animActions.triggerShake()
+      setTimeout(() => {
+        setError('')
+      }, 500)
     } else {
-      // Digitar letra: SUBSTITUI na posição do cursor (não insere!)
-      if (/^[A-Z]$/.test(key) && cursorPosition < 5) {
-        const newGuess = [...gameState.currentGuess]
-        newGuess[cursorPosition] = key.toLowerCase()
+      // Ativar animação de flip para a linha que acabou de ser submetida
+      const submittedRow = gameState.currentRow
+      animActions.triggerFlip(submittedRow)
 
-        // Ativar animação de digitação
-        setLastTypedIndex(cursorPosition)
-        setTimeout(() => setLastTypedIndex(-1), 150)
-
-        setGameState({
-          ...gameState,
-          currentGuess: newGuess,
-        })
-
-        // Mover para próxima posição vazia (moveEditToNext)
-        let nextEmpty = -1
-        for (let i = 1; i < 5; i++) {
-          const pos = (cursorPosition + i) % 5
-          if (newGuess[pos] === '') {
-            nextEmpty = pos
-            break
-          }
+      // Detectar QUAIS boards foram completados NESTA jogada
+      const newlyCompletedBoardIndices: number[] = []
+      result.newState.boards.forEach((board, idx) => {
+        if (board.isComplete && !gameState.boards[idx].isComplete) {
+          newlyCompletedBoardIndices.push(idx)
         }
+      })
 
-        if (nextEmpty !== -1) {
-          setCursorPosition(nextEmpty)
-        } else {
-          // Todas posições cheias, move para posição 5 (fora)
-          setCursorPosition(5)
-        }
+      setGameState(result.newState)
+      storage.saveGameState(mode, gameState.dateKey, result.newState)
+      animActions.setCursorPosition(0)
+
+      // Se algum board foi completado, ativar animação happy jump
+      if (newlyCompletedBoardIndices.length > 0) {
+        setTimeout(() => {
+          animActions.triggerHappy(submittedRow, newlyCompletedBoardIndices)
+        }, 1000) // Após o flip completar
+      }
+
+      if (result.newState.isGameOver) {
+        setTimeout(() => dialogManager.dialogs.stats.onOpen(), newlyCompletedBoardIndices.length > 0 ? 2200 : 1200)
       }
     }
-  }, [gameState, settings, mode, cursorPosition])
+  }, [gameState, settings, mode, animActions, dialogManager])
 
-  // Teclado físico
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (helpOpen || statsOpen || settingsOpen || devModeOpen || aboutOpen) return
+  // Hook de keyboard input
+  const { handleKey } = useKeyboardInput({
+    gameState,
+    onGuessChange: handleGuessChange,
+    onSubmitGuess: handleSubmitGuess,
+    onCursorMove: animActions.setCursorPosition,
+    onTyping: animActions.triggerTyping,
+    cursorPosition,
+    disabled: dialogManager.hasOpenDialog
+  })
 
-      const key = e.key.toUpperCase()
-
-      if (key === 'ENTER') {
-        handleKeyPress('ENTER')
-      } else if (key === 'BACKSPACE') {
-        handleKeyPress('BACKSPACE')
-      } else if (key === 'ARROWLEFT' || key === 'ARROWRIGHT') {
-        e.preventDefault()
-        handleKeyPress(key)
-      } else if (key === ' ') {
-        e.preventDefault()
-        handleKeyPress(' ')
-      } else if (/^[A-Z]$/.test(key)) {
-        // Passar a tecla em maiúscula, será convertida para minúscula no handler
-        handleKeyPress(key)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyPress, helpOpen, statsOpen, settingsOpen, devModeOpen, aboutOpen])
 
   // Konami Code listener (↑ ↑ ↓ ↓ ← → ← → B A)
   useEffect(() => {
@@ -402,7 +308,7 @@ function Game() {
         konamiIndex++
         if (konamiIndex === konamiCode.length) {
           // Konami Code completo!
-          setDevModeOpen(true)
+          dialogManager.dialogs.dev.onOpen()
           konamiIndex = 0
         }
       } else {
@@ -431,11 +337,11 @@ function Game() {
 
       <Header
         title={modeTitle}
-        onHelp={() => setHelpOpen(true)}
-        onStats={() => setStatsOpen(true)}
-        onSettings={() => setSettingsOpen(true)}
-        onAbout={() => setAboutOpen(true)}
-        onArchive={() => setArchiveOpen(true)}
+        onHelp={dialogManager.dialogs.help.onOpen}
+        onStats={dialogManager.dialogs.stats.onOpen}
+        onSettings={dialogManager.dialogs.settings.onOpen}
+        onAbout={dialogManager.dialogs.about.onOpen}
+        onArchive={dialogManager.dialogs.archive.onOpen}
         onToggleTabs={() => setTabsVisible(!tabsVisible)}
         tabsVisible={tabsVisible}
         isArchive={customDayNumber !== null}
@@ -464,22 +370,27 @@ function Game() {
 
           <Keyboard
             keyStates={gameState.keyStates}
-            onKeyPress={handleKeyPress}
+            onKeyPress={handleKey}
             highContrast={settings.highContrast}
             disabled={gameState.isGameOver}
           />
         </div>
       </main>
 
-      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      <HelpDialog 
+        open={dialogManager.dialogs.help.open} 
+        onOpenChange={(open) => !open && dialogManager.closeDialog()} 
+      />
 
       <StatsDialog
-        open={statsOpen}
+        open={dialogManager.dialogs.stats.open}
         onOpenChange={(open) => {
-          setStatsOpen(open)
-          // Quando fecha o StatsDialog após jogo concluído, mostrar TopTabs
-          if (!open && gameState.isGameOver) {
-            setTabsVisible(true)
+          if (!open) {
+            dialogManager.closeDialog()
+            // Quando fecha o StatsDialog após jogo concluído, mostrar TopTabs
+            if (gameState.isGameOver) {
+              setTabsVisible(true)
+            }
           }
         }}
         stats={stats}
@@ -487,32 +398,31 @@ function Game() {
       />
 
       <SettingsDialog
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
+        open={dialogManager.dialogs.settings.open}
+        onOpenChange={(open) => !open && dialogManager.closeDialog()}
         settings={settings}
         onSettingsChange={setSettings}
         onOpenStats={() => {
-          setSettingsOpen(false)
-          setStatsOpen(true)
+          dialogManager.dialogs.stats.onOpen()
         }}
       />
 
       <DevModeDialog
-        open={devModeOpen}
-        onOpenChange={setDevModeOpen}
+        open={dialogManager.dialogs.dev.open}
+        onOpenChange={(open) => !open && dialogManager.closeDialog()}
         gameState={gameState}
         onResetLocalStorage={handleResetLocalStorage}
         onSkipToWin={handleSkipToWin}
       />
 
       <AboutDialog
-        open={aboutOpen}
-        onOpenChange={setAboutOpen}
+        open={dialogManager.dialogs.about.open}
+        onOpenChange={(open) => !open && dialogManager.closeDialog()}
       />
 
       <ArchiveDialog
-        open={archiveOpen}
-        onOpenChange={setArchiveOpen}
+        open={dialogManager.dialogs.archive.open}
+        onOpenChange={(open) => !open && dialogManager.closeDialog()}
         currentMode={mode}
       />
     </div>

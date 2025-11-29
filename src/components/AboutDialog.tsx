@@ -16,6 +16,7 @@ import {
 } from './ui/dialog'
 import { ScrollArea } from './ui/scroll-area'
 import { Coffee, Zap, Code, Heart, Trophy, Tv, Gamepad2, Github, Linkedin, Instagram } from 'lucide-react'
+import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 
 interface AboutDialogProps {
   open: boolean
@@ -23,25 +24,12 @@ interface AboutDialogProps {
 }
 
 export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  }
+  const { containerVariants, itemVariants } = useDialogAnimations({
+    staggerDelay: 0.15,
+    childrenDelay: 0.1,
+    itemDuration: 0.5,
+    itemDistance: 20,
+  })
 
   const iconVariants = {
     hidden: { scale: 0, rotate: -180 },

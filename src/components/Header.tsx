@@ -143,7 +143,7 @@ export function Header({
             size="icon"
             onClick={onAbout}
             aria-label="Sobre"
-            className="text-gray-300 hover:text-white"
+            className="text-gray-300 hover:text-white hidden md:flex"
           >
             <Info className="w-6 h-6" />
           </Button>

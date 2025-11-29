@@ -71,6 +71,24 @@ export function getTodayDateKey(): string {
 }
 
 /**
+ * Retorna o timestamp da próxima meia-noite
+ * Útil para usar com componentes de countdown
+ */
+export function getNextMidnightTimestamp(): number {
+  const now = new Date()
+  const midnight = new Date(now)
+  midnight.setHours(24, 0, 0, 0)
+  return midnight.getTime()
+}
+
+/**
+ * Retorna os milissegundos até a próxima meia-noite
+ */
+export function getMillisecondsUntilMidnight(): number {
+  return getNextMidnightTimestamp() - Date.now()
+}
+
+/**
  * Retorna o tempo até meia-noite no formato HH:MM:SS
  */
 export function getTimeUntilMidnight(): string {
@@ -83,6 +101,17 @@ export function getTimeUntilMidnight(): string {
   const minutes = Math.floor((diff % 3600000) / 60000)
   const seconds = Math.floor((diff % 60000) / 1000)
   
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
+/**
+ * Formata tempo até meia-noite (usado para countdown)
+ * @param hours - Horas restantes
+ * @param minutes - Minutos restantes
+ * @param seconds - Segundos restantes
+ * @returns String formatada HH:MM:SS
+ */
+export function formatTimeUntilMidnight(hours: number, minutes: number, seconds: number): string {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 

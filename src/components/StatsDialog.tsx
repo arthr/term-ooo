@@ -1,5 +1,4 @@
 // src/components/StatsDialog.tsx
-import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Countdown from 'react-countdown'
 import {
@@ -14,6 +13,9 @@ import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
 import { getResultMessage, generateShareText } from '@/game/engine'
 import { Share2, Check } from 'lucide-react'
+import { useDialogAnimations } from '@/hooks/useDialogAnimations'
+import { useTemporaryState } from '@/hooks/useTemporaryState'
+import { getNextMidnightTimestamp } from '@/lib/dates'
 
 interface StatsDialogProps {
   open: boolean
@@ -23,15 +25,7 @@ interface StatsDialogProps {
 }
 
 export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialogProps) {
-  const [copied, setCopied] = useState(false)
-  
-  // Calcular timestamp da meia-noite
-  const getMidnightTimestamp = () => {
-    const now = new Date()
-    const midnight = new Date(now)
-    midnight.setHours(24, 0, 0, 0)
-    return midnight.getTime()
-  }
+  const [copied, setCopiedTemporary] = useTemporaryState()
   
   // Renderer customizado para o countdown
   const countdownRenderer = ({ hours, minutes, seconds }: { hours: number; minutes: number; seconds: number }) => {
@@ -58,8 +52,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
     
     try {
       await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setCopiedTemporary(2000)
     } catch (err) {
       console.error('Erro ao copiar:', err)
     }
@@ -67,25 +60,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
 
   const maxValue = Math.max(...stats.guessDistribution, 1)
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.05,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 },
-    },
-  }
+  const { containerVariants, itemVariants } = useDialogAnimations()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -188,7 +163,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
               <div className="flex justify-between items-center">
                 <div>
                   <div className="text-xs text-gray-400">Próxima Palavra</div>
-                  <Countdown date={getMidnightTimestamp()} renderer={countdownRenderer} />
+                  <Countdown date={getNextMidnightTimestamp()} renderer={countdownRenderer} />
                 </div>
                 <Button
                   onClick={handleShare}
