@@ -321,7 +321,7 @@ function Game() {
 
     window.addEventListener('keydown', handleKonamiCode)
     return () => window.removeEventListener('keydown', handleKonamiCode)
-  }, [])
+  }, [dialogManager.dialogs.dev])
 
   if (!gameState) {
     return (
