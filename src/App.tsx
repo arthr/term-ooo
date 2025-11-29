@@ -235,12 +235,15 @@ function Game() {
 
   // Handler para atualizar currentGuess
   const handleGuessChange = useCallback((newGuess: string[]) => {
-    if (!gameState) return
-    setGameState({
-      ...gameState,
-      currentGuess: newGuess,
+    setGameState(prevState => {
+      if (!prevState) return prevState
+
+      return {
+        ...prevState,
+        currentGuess: newGuess,
+      }
     })
-  }, [gameState])
+  }, [])
 
   // Handler para submeter guess (ENTER)
   const handleSubmitGuess = useCallback(() => {
@@ -318,7 +321,7 @@ function Game() {
 
     window.addEventListener('keydown', handleKonamiCode)
     return () => window.removeEventListener('keydown', handleKonamiCode)
-  }, [])
+  }, [dialogManager.dialogs.dev])
 
   if (!gameState) {
     return (

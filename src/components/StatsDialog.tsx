@@ -36,13 +36,16 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
     )
   }
   
-  // Se stats é null, usar valores padrão
-  if (!stats) {
-    return null
+  const safeStats = stats ?? {
+    gamesPlayed: 0,
+    gamesWon: 0,
+    currentStreak: 0,
+    maxStreak: 0,
+    guessDistribution: Array(gameState.maxAttempts + 1).fill(0),
   }
 
-  const winPercentage = stats.gamesPlayed > 0
-    ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100)
+  const winPercentage = safeStats.gamesPlayed > 0
+    ? Math.round((safeStats.gamesWon / safeStats.gamesPlayed) * 100)
     : 0
 
   const handleShare = async () => {
@@ -58,7 +61,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
     }
   }
 
-  const maxValue = Math.max(...stats.guessDistribution, 1)
+  const maxValue = Math.max(...safeStats.guessDistribution, 1)
 
   const { containerVariants, itemVariants } = useDialogAnimations()
 
@@ -106,7 +109,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
                 
                 <motion.div variants={itemVariants} className="grid grid-cols-4 gap-2 text-center">
             <div>
-              <div className="text-2xl font-bold">{stats.gamesPlayed}</div>
+              <div className="text-2xl font-bold">{safeStats.gamesPlayed}</div>
               <div className="text-xs text-gray-400">Jogadas</div>
             </div>
             <div>
@@ -114,11 +117,11 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
               <div className="text-xs text-gray-400">% Vitórias</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{stats.currentStreak}</div>
+              <div className="text-2xl font-bold">{safeStats.currentStreak}</div>
               <div className="text-xs text-gray-400">Sequência</div>
             </div>
                   <div>
-                    <div className="text-2xl font-bold">{stats.maxStreak}</div>
+                    <div className="text-2xl font-bold">{safeStats.maxStreak}</div>
                     <div className="text-xs text-gray-400">Melhor</div>
                   </div>
                 </motion.div>
@@ -126,13 +129,13 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
                 <motion.div variants={itemVariants}>
                   <h3 className="text-base font-semibold mb-3">Distribuição de Tentativas</h3>
             <div className="space-y-1.5">
-              {stats.guessDistribution.map((count, index) => {
+              {safeStats.guessDistribution.map((count, index) => {
                 const isCurrentAttempt = gameState.isGameOver && gameState.isWin && gameState.currentRow - 1 === index
                 const percentage = maxValue > 0 ? (count / maxValue) * 100 : 0
                 
                 // Medalhas baseadas na posição
                 const getLabel = (idx: number) => {
-                  if (idx === stats.guessDistribution.length - 1) return '💀'
+                  if (idx === safeStats.guessDistribution.length - 1) return '💀'
                   if (idx === 0) return `🥇`
                   if (idx === 1) return `🥈`
                   if (idx === 2) return `🥉`

@@ -10,6 +10,19 @@ export default [
   },
   js.configs.recommended,
   {
+    files: ['**/*.js'],
+    languageOptions: {
+      ...js.configs.recommended.languageOptions,
+      globals: {
+        ...js.configs.recommended.languageOptions?.globals,
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: typescriptParser,
@@ -18,8 +31,18 @@ export default [
         sourceType: 'module',
       },
       globals: {
-        browser: true,
-        es2020: true,
+        ...js.configs.recommended.languageOptions?.globals,
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        localStorage: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        console: 'readonly',
       },
     },
     plugins: {
@@ -28,6 +51,7 @@ export default [
       'react-refresh': reactRefresh,
     },
     rules: {
+      'no-undef': 'off',
       ...typescript.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
