@@ -159,9 +159,9 @@ export function useKeyboardInput({
    * Listener de teclado físico
    */
   useEffect(() => {
-    if (disabled) return
-
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (disabled) return
+
       const key = e.key.toUpperCase()
 
       if (key === 'ENTER') {
