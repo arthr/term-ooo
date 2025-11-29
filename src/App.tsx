@@ -49,7 +49,7 @@ function Game() {
     mode,
     customDayNumber,
     animActions,
-    onCompletedGameLoad: () => setTabsVisible(true)
+    onCompletedGameLoad: useCallback(() => setTabsVisible(true), [])
   })
 
   useStatsTracker({ gameState, mode, customDayNumber, setStats })
