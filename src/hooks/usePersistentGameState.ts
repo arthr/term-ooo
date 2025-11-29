@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GameMode, GameState, Stats } from '@/game/types'
 import { createInitialGameState, getDayNumber } from '@/game/engine'
 import { getTodayDateKey } from '@/lib/utils'
@@ -26,6 +26,11 @@ export function usePersistentGameState({
 }: UsePersistentGameStateOptions): UsePersistentGameStateResult {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [stats, setStats] = useState<Stats | null>(null)
+  const completedGameLoadRef = useRef(onCompletedGameLoad)
+
+  useEffect(() => {
+    completedGameLoadRef.current = onCompletedGameLoad
+  }, [onCompletedGameLoad])
 
   useEffect(() => {
     const actualDayNumber = customDayNumber || getDayNumber()
@@ -44,7 +49,7 @@ export function usePersistentGameState({
       animActions.setCursorPosition(firstEmpty === -1 ? 5 : firstEmpty)
 
       if (savedState.isGameOver) {
-        onCompletedGameLoad?.()
+        completedGameLoadRef.current?.()
       }
     } else {
       const newState = createInitialGameState(mode, actualDayNumber, dateKey)
@@ -55,7 +60,7 @@ export function usePersistentGameState({
 
     const currentModeStats = storage.getStats(mode)
     setStats(currentModeStats)
-  }, [mode, customDayNumber, animActions, onCompletedGameLoad])
+  }, [mode, customDayNumber, animActions])
 
   return { gameState, setGameState, stats, setStats }
 }
