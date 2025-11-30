@@ -14,12 +14,17 @@ import { SettingsDialog } from './components/SettingsDialog'
 import { DevModeDialog } from './components/DevModeDialog'
 import { AboutDialog } from './components/AboutDialog'
 import { ArchiveDialog } from './components/ArchiveDialog'
+import { ChatButton } from './components/Chat/ChatButton'
+import { ChatPanel } from './components/Chat/ChatPanel'
 import { useDialogManager } from './hooks/useDialogManager'
 import { useGameAnimations } from './hooks/useGameAnimations'
 import { useKeyboardInput } from './hooks/useKeyboardInput'
 import { useGameMode } from './hooks/useGameMode'
 import { usePersistentGameState } from './hooks/usePersistentGameState'
 import { useStatsTracker } from './hooks/useStatsTracker'
+import { useChatWebSocket } from './hooks/useChatWebSocket'
+import { CHAT_CONFIG } from './lib/chat-config'
+import { loadChatMinimized, saveChatMinimized } from './lib/chat-utils'
 
 function Game() {
   const navigate = useNavigate()
@@ -28,11 +33,17 @@ function Game() {
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
   const [error, setError] = useState<string>('')
   const [tabsVisible, setTabsVisible] = useState(false)
+  const [chatOpen, setChatOpen] = useState(() => !loadChatMinimized())
 
   const { mode, customDayNumber } = useGameMode({ location, navigate })
 
   // Gerenciamento unificado de dialogs
   const dialogManager = useDialogManager()
+
+  // WebSocket Chat (apenas se habilitado)
+  const chat = useChatWebSocket({
+    autoConnect: CHAT_CONFIG.ENABLED,
+  })
 
   // Gerenciamento unificado de animações
   const {
@@ -306,6 +317,39 @@ function Game() {
         onOpenChange={(open) => !open && dialogManager.closeDialog()}
         currentMode={mode}
       />
+
+      {/* Chat WebSocket (apenas se habilitado) */}
+      {CHAT_CONFIG.ENABLED && (
+        <>
+          <ChatButton
+            onClick={() => {
+              setChatOpen(true)
+              saveChatMinimized(false)
+            }}
+            onlineCount={chat.onlineCount}
+            connected={chat.connected}
+          />
+
+          <ChatPanel
+            open={chatOpen}
+            onClose={() => {
+              setChatOpen(false)
+              saveChatMinimized(true)
+            }}
+            connected={chat.connected}
+            authenticated={chat.authenticated}
+            userId={chat.userId}
+            nickname={chat.nickname}
+            messages={chat.messages}
+            onlineCount={chat.onlineCount}
+            error={chat.error}
+            latency={chat.latency}
+            isConnecting={chat.isConnecting}
+            onSetNickname={chat.setNickname}
+            onSendMessage={chat.sendMessage}
+          />
+        </>
+      )}
     </div>
   )
 }
