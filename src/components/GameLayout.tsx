@@ -1,6 +1,6 @@
 // src/components/GameLayout.tsx
 import { GameState } from '@/game/types'
-import { GameBoard } from './GameBoard'
+import { GameBoard as NewGameBoard } from './new/GameBoard'
 
 interface GameLayoutProps {
   gameState: GameState
@@ -34,18 +34,18 @@ export function GameLayout({
         ? 'flex justify-center py-4 space-x-3 md:space-x-8'
         : 'grid grid-cols-2 md:flex md:w-11/12 w-10/12 pt-4 justify-between items-center gap-x-4 gap-y-2 mx-auto'
 
-  const boardClassName = mode === 'termo' ? 'w-11/12 md:max-w-xs' : undefined
+  const gameMode = mode === 'termo' ? 'uno' : mode === 'dueto' ? 'duo' : 'quadra'
 
   return (
     <div className={containerClassName}>
       {boards.map((board, index) => (
-        <GameBoard
-          key={`${board.solution}-${index}`}
-          className={boardClassName}
+        <NewGameBoard
+          key={index}
           board={board}
           currentGuess={currentGuess}
           currentRow={currentRow}
           maxAttempts={maxAttempts}
+          gameMode={gameMode}
           highContrast={highContrast}
           cursorPosition={cursorPosition}
           shouldShake={shouldShake}
