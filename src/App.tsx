@@ -45,6 +45,13 @@ function Game() {
 
   // Estado do chat integrado ao dialogManager
   const chatOpen = dialogManager.isOpen('chat')
+  
+  // Marcar mensagens como lidas quando abrir o chat
+  useEffect(() => {
+    if (chatOpen) {
+      chat.markAsRead()
+    }
+  }, [chatOpen, chat])
 
   // Gerenciamento unificado de animações
   const {
@@ -215,7 +222,7 @@ function Game() {
 
   if (!gameState) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
         <div className="text-white text-xl">Carregando...</div>
       </div>
     )
@@ -224,10 +231,7 @@ function Game() {
   const modeTitle = mode === 'termo' ? 'TERMO' : mode === 'dueto' ? 'DUETO' : 'QUARTETO'
 
   return (
-    <div className="h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col">
-
-      <TopTabs currentMode={mode} onModeChange={handleModeChange} isVisible={tabsVisible} />
-
+    <div className="h-dvh bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col overflow-hidden">
       <Header
         title={modeTitle}
         onHelp={dialogManager.dialogs.help.onOpen}
@@ -236,31 +240,32 @@ function Game() {
         onAbout={dialogManager.dialogs.about.onOpen}
         onArchive={dialogManager.dialogs.archive.onOpen}
         onToggleTabs={() => setTabsVisible(!tabsVisible)}
-        tabsVisible={tabsVisible}
         isArchive={customDayNumber !== null}
         archiveDayNumber={customDayNumber || undefined}
       />
 
-      <main className="flex-1 flex flex-col container mx-auto px-2">
+      <TopTabs currentMode={mode} onModeChange={handleModeChange} isVisible={tabsVisible} />
+
+      <main className="flex-1 flex flex-col items-center justify-between px-2 py-2 sm:px-4 sm:py-4 md:py-6 max-w-7xl mx-auto w-full overflow-hidden">
         {error && (
           <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse">
             {error}
           </div>
         )}
 
-        <div className="flex-1 flex flex-col justify-between mx-auto w-full">
-          <GameLayout
-            gameState={gameState}
-            highContrast={settings.highContrast}
-            cursorPosition={cursorPosition}
-            shouldShake={shouldShake}
-            onTileClick={handleTileClick}
-            revealingRow={revealingRow}
-            lastTypedIndex={lastTypedIndex}
-            happyRow={happyRow}
-            happyBoards={happyBoards}
-          />
+        <GameLayout
+          gameState={gameState}
+          highContrast={settings.highContrast}
+          cursorPosition={cursorPosition}
+          shouldShake={shouldShake}
+          onTileClick={handleTileClick}
+          revealingRow={revealingRow}
+          lastTypedIndex={lastTypedIndex}
+          happyRow={happyRow}
+          happyBoards={happyBoards}
+        />
 
+        <div className="w-full mt-2 sm:mt-4 md:mt-6 max-w-2xl mx-auto flex-shrink-0">
           <Keyboard
             keyStates={gameState.keyStates}
             onKeyPress={handleKey}
@@ -325,6 +330,7 @@ function Game() {
           <ChatButton
             onClick={dialogManager.dialogs.chat.onOpen}
             onlineCount={chat.onlineCount}
+            hasNewMessages={chat.unreadCount > 0}
             connected={chat.connected}
           />
 

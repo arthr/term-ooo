@@ -1,8 +1,15 @@
 // src/components/Header.tsx
 import { useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { HelpCircle, Settings, BarChart3, Info, ChevronDown, Calendar, Home } from 'lucide-react'
-import { motion } from 'framer-motion'
+import {
+  Menu,
+  HelpCircle,
+  Calendar,
+  Info,
+  BarChart3,
+  Settings,
+  Home
+} from "lucide-react";
 import { Button } from './ui/button'
 
 interface HeaderProps {
@@ -13,7 +20,6 @@ interface HeaderProps {
   onAbout: () => void
   onArchive: () => void
   onToggleTabs: () => void
-  tabsVisible: boolean
   isArchive: boolean
   archiveDayNumber?: number
 }
@@ -26,7 +32,6 @@ export function Header({
   onAbout, 
   onArchive, 
   onToggleTabs, 
-  tabsVisible, 
   isArchive, 
   archiveDayNumber 
 }: HeaderProps) {
@@ -59,7 +64,7 @@ export function Header({
   }
 
   return (
-    <header className="w-full border-b border-gray-700 bg-gray-900">
+    <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm flex-shrink-0">
       {/* Áudio do Bodão (oculto) */}
       <audio
         ref={audioRef}
@@ -68,30 +73,33 @@ export function Header({
         preload="auto"
       />
 
-      <div className="container max-w-2xl mx-auto px-2 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="max-w-7xl mx-auto px-2 py-2 sm:px-4 sm:py-3 flex md:grid md:grid-cols-3 items-center justify-between">
+        {/* Left section: Toggle + Logo (mobile) / Toggle + Buttons (desktop) */}
+        <div className="flex items-center gap-1 sm:gap-2 md:justify-start">
           <Button
             variant="ghost"
             size="icon"
             onClick={onToggleTabs}
             aria-label="Alternar modos de jogo"
-            className={`text-gray-300 hover:text-white transition-colors ${tabsVisible ? 'text-green-400' : ''}`}
+            className="text-slate-300 hover:text-white"
           >
-            <motion.div
-              animate={{ rotate: tabsVisible ? 180 : 0 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            >
-              <ChevronDown className="w-6 h-6" />
-            </motion.div>
+            <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
+
+          {/* Logo on mobile */}
+          <h1 className="text-white text-base sm:text-lg md:hidden uppercase tracking-wider font-bold">
+            {title}
+          </h1>
+
+          {/* Buttons on desktop */}
           <Button
             variant="ghost"
             size="icon"
             onClick={onHelp}
             aria-label="Ajuda"
-            className="text-gray-300 hover:text-white"
+            className="text-slate-300 hover:text-white hidden md:flex"
           >
-            <HelpCircle className="w-6 h-6" />
+            <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
           <Button
             variant="ghost"
@@ -99,14 +107,16 @@ export function Header({
             onClick={handleBodaoClick}
             aria-label="Bodão! Béééééé!"
             disabled={isPlaying}
-            className={`text-2xl hover:scale-110 transition-transform ${isPlaying ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-125'}`}
+            title="Bodão"
+            className={`text-slate-300 hover:text-white hidden md:flex text-2xl ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             🐐
           </Button>
         </div>
-        
-        <div className="flex flex-col items-center gap-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-wider">
+
+        {/* Center logo (desktop only) */}
+        <div className="hidden md:flex items-center justify-center flex-col gap-1">
+          <h1 className="text-white text-lg md:text-xl lg:text-2xl uppercase tracking-wider font-bold">
             {title}
           </h1>
           {isArchive && archiveDayNumber && (
@@ -115,17 +125,18 @@ export function Header({
             </div>
           )}
         </div>
-        
-        <div className="flex items-center gap-2">
+
+        {/* Right buttons */}
+        <div className="flex items-center gap-1 sm:gap-2 md:justify-end">
           {isArchive ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={handleBackToToday}
               aria-label="Voltar para Hoje"
-              className="text-green-400 hover:text-green-300 hidden md:block"
+              className="text-green-400 hover:text-green-300 hidden md:flex"
             >
-              <Home className="w-6 h-6" />
+              <Home className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
           ) : (
             <Button
@@ -133,9 +144,9 @@ export function Header({
               size="icon"
               onClick={onArchive}
               aria-label="Arquivo de Dias Anteriores"
-              className="text-gray-300 hover:text-white hidden md:block"
+              className="text-slate-300 hover:text-white"
             >
-              <Calendar className="w-6 h-6" />
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
           )}
           <Button
@@ -143,31 +154,30 @@ export function Header({
             size="icon"
             onClick={onAbout}
             aria-label="Sobre"
-            className="text-gray-300 hover:text-white hidden md:flex"
+            className="text-slate-300 hover:text-white"
           >
-            <Info className="w-6 h-6" />
+            <Info className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={onStats}
             aria-label="Estatísticas"
-            className="text-gray-300 hover:text-white"
+            className="text-slate-300 hover:text-white"
           >
-            <BarChart3 className="w-6 h-6" />
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={onSettings}
             aria-label="Configurações"
-            className="text-gray-300 hover:text-white"
+            className="text-slate-300 hover:text-white"
           >
-            <Settings className="w-6 h-6" />
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
       </div>
     </header>
-  )
+  );
 }
-
