@@ -36,6 +36,9 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Build
+        env:
+            VITE_CHAT_WS_URL: ${{ secrets.VITE_CHAT_WS_URL }}
+            VITE_CHAT_ENABLED: ${{ secrets.VITE_CHAT_ENABLED }}
         run: pnpm build
       
       - name: Setup Pages
