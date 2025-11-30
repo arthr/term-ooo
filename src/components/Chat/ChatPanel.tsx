@@ -1,12 +1,14 @@
 // src/components/Chat/ChatPanel.tsx
 // Painel lateral do chat
 
-import { useEffect } from 'react'
 import { X, Users, Wifi, WifiOff } from 'lucide-react'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatMessageInput } from './ChatMessageInput'
 import { ChatNicknameForm } from './ChatNicknameForm'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { formatLatency, getLatencyColor } from '@/lib/chat-utils'
+import { Z_INDEX } from '@/lib/z-index'
 
 interface ChatPanelProps {
   open: boolean
@@ -39,30 +41,9 @@ export function ChatPanel({
   onSetNickname,
   onSendMessage,
 }: ChatPanelProps) {
-  // Prevenir scroll do body quando chat está aberto (mobile)
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [open])
-
-  // Fechar com ESC
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) {
-        onClose()
-      }
-    }
-    
-    window.addEventListener('keydown', handleEsc)
-    return () => window.removeEventListener('keydown', handleEsc)
-  }, [open, onClose])
+  // Hooks auxiliares
+  useBodyScrollLock(open)
+  useEscapeKey(onClose, open)
 
   if (!open) return null
 
@@ -70,19 +51,16 @@ export function ChatPanel({
     <>
       {/* Overlay (escurece fundo) */}
       <div 
-        className="fixed inset-0 bg-black/50 z-40 md:z-40"
+        className="fixed inset-0 bg-black/50"
+        style={{ zIndex: Z_INDEX.CHAT_OVERLAY }}
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Painel */}
       <div
-        className={`
-          fixed right-0 top-0 h-full w-full md:w-[360px] 
-          bg-gray-900 shadow-2xl z-50
-          flex flex-col
-          animate-in slide-in-from-right duration-300
-        `}
+        className="fixed right-0 top-0 h-full w-full md:w-[360px] bg-gray-900 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
+        style={{ zIndex: Z_INDEX.CHAT_PANEL }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">

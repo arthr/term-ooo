@@ -2,6 +2,7 @@
 // Botão flutuante para abrir o chat
 
 import { MessageCircle } from 'lucide-react'
+import { Z_INDEX } from '@/lib/z-index'
 
 interface ChatButtonProps {
   onClick: () => void
@@ -20,7 +21,7 @@ export function ChatButton({
     <button
       onClick={onClick}
       className={`
-        fixed bottom-4 right-4 z-40
+        fixed bottom-4 right-4
         w-14 h-14 rounded-full
         bg-gradient-to-br from-blue-600 to-blue-800
         hover:from-blue-500 hover:to-blue-700
@@ -31,6 +32,7 @@ export function ChatButton({
         ${hasNewMessages ? 'animate-pulse' : ''}
         ${!connected ? 'opacity-50' : ''}
       `}
+      style={{ zIndex: Z_INDEX.CHAT_BUTTON }}
       aria-label="Abrir chat"
       title={connected ? `${onlineCount} usuários online` : 'Chat desconectado'}
     >

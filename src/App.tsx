@@ -24,7 +24,6 @@ import { usePersistentGameState } from './hooks/usePersistentGameState'
 import { useStatsTracker } from './hooks/useStatsTracker'
 import { useChatWebSocket } from './hooks/useChatWebSocket'
 import { CHAT_CONFIG } from './lib/chat-config'
-import { loadChatMinimized, saveChatMinimized } from './lib/chat-utils'
 
 function Game() {
   const navigate = useNavigate()
@@ -33,17 +32,19 @@ function Game() {
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
   const [error, setError] = useState<string>('')
   const [tabsVisible, setTabsVisible] = useState(false)
-  const [chatOpen, setChatOpen] = useState(() => !loadChatMinimized())
 
   const { mode, customDayNumber } = useGameMode({ location, navigate })
 
-  // Gerenciamento unificado de dialogs
+  // Gerenciamento unificado de dialogs (incluindo chat)
   const dialogManager = useDialogManager()
 
   // WebSocket Chat (apenas se habilitado)
   const chat = useChatWebSocket({
     autoConnect: CHAT_CONFIG.ENABLED,
   })
+
+  // Estado do chat integrado ao dialogManager
+  const chatOpen = dialogManager.isOpen('chat')
 
   // Gerenciamento unificado de animações
   const {
@@ -322,20 +323,14 @@ function Game() {
       {CHAT_CONFIG.ENABLED && (
         <>
           <ChatButton
-            onClick={() => {
-              setChatOpen(true)
-              saveChatMinimized(false)
-            }}
+            onClick={dialogManager.dialogs.chat.onOpen}
             onlineCount={chat.onlineCount}
             connected={chat.connected}
           />
 
           <ChatPanel
             open={chatOpen}
-            onClose={() => {
-              setChatOpen(false)
-              saveChatMinimized(true)
-            }}
+            onClose={dialogManager.dialogs.chat.onClose}
             connected={chat.connected}
             authenticated={chat.authenticated}
             userId={chat.userId}
