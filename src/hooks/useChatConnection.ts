@@ -1,5 +1,5 @@
 // src/hooks/useChatConnection.ts
-// Hook para gerenciar conexão WebSocket, reconexão e heartbeat
+// Hook para gerenciar conexão WebSocket, reconexão e heartbeat (v1.3)
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { CHAT_CONFIG } from '@/lib/chat-config'
@@ -8,6 +8,7 @@ interface ConnectionState {
   connected: boolean
   isConnecting: boolean
   latency: number | null
+  connectionId: string | null  // v1.3: ID da conexão específica
 }
 
 interface UseChatConnectionProps {
@@ -35,6 +36,7 @@ export function useChatConnection({
     connected: false,
     isConnecting: false,
     latency: null,
+    connectionId: null,
   })
 
   const wsRef = useRef<WebSocket | null>(null)
@@ -43,6 +45,7 @@ export function useChatConnection({
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const lastPingTimeRef = useRef<number | null>(null)
   const isIntentionalCloseRef = useRef(false)
+  const hasErrorRef = useRef(false)  // Detectar erro para interromper reconexão
 
   // Limpar timers
   const clearTimers = useCallback(() => {
@@ -88,7 +91,8 @@ export function useChatConnection({
 
       ws.onopen = () => {
         reconnectAttemptsRef.current = 0
-        setState({ connected: true, isConnecting: false, latency: null })
+        hasErrorRef.current = false
+        setState(prev => ({ ...prev, connected: true, isConnecting: false, latency: null }))
         startHeartbeat()
         onConnected?.()
       }
@@ -110,21 +114,24 @@ export function useChatConnection({
         }
       }
 
-      ws.onerror = (error) => {
-        console.error('[ChatConnection] Erro na conexão:', error)
+      ws.onerror = () => {
+        hasErrorRef.current = true
         setState(prev => ({ ...prev, isConnecting: false }))
       }
 
       ws.onclose = () => {
         clearTimers()
-        setState({ connected: false, isConnecting: false, latency: null })
+        setState(prev => ({ ...prev, connected: false, isConnecting: false, latency: null }))
         onDisconnected?.()
 
-        // Reconectar se não foi intencional
-        if (!isIntentionalCloseRef.current && 
-            reconnectAttemptsRef.current < maxReconnectAttempts) {
+        // Reconectar apenas se não foi intencional, não houve erro e está dentro do limite
+        const shouldReconnect = 
+          !isIntentionalCloseRef.current && 
+          !hasErrorRef.current &&
+          reconnectAttemptsRef.current < maxReconnectAttempts
+
+        if (shouldReconnect) {
           const delay = reconnectDelayBase * Math.pow(2, reconnectAttemptsRef.current)
-          
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttemptsRef.current++
             connect()
@@ -140,6 +147,7 @@ export function useChatConnection({
   // Desconectar
   const disconnect = useCallback(() => {
     isIntentionalCloseRef.current = true
+    hasErrorRef.current = false
     clearTimers()
     
     if (wsRef.current) {
@@ -147,7 +155,7 @@ export function useChatConnection({
       wsRef.current = null
     }
     
-    setState({ connected: false, isConnecting: false, latency: null })
+    setState(prev => ({ ...prev, connected: false, isConnecting: false, latency: null }))
   }, [clearTimers])
 
   // Enviar mensagem
@@ -159,10 +167,16 @@ export function useChatConnection({
     return false
   }, [])
 
+  // v1.3: Salvar connectionId recebido do servidor
+  const setConnectionId = useCallback((connectionId: string) => {
+    setState(prev => ({ ...prev, connectionId }))
+  }, [])
+
   // Auto-conectar
   useEffect(() => {
     if (autoConnect) {
       isIntentionalCloseRef.current = false
+      hasErrorRef.current = false
       connect()
     }
 
@@ -170,13 +184,16 @@ export function useChatConnection({
       isIntentionalCloseRef.current = true
       disconnect()
     }
-  }, [autoConnect, connect, disconnect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoConnect])
 
   return {
     ...state,
+    wsRef,
     connect,
     disconnect,
     send,
+    setConnectionId,  // v1.3: Expor método
   }
 }
 

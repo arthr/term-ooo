@@ -13,12 +13,19 @@ interface UseChatWebSocketProps extends Partial<ChatWebSocketConfig> {
 }
 
 /**
- * Hook compositor para gerenciar chat WebSocket
+ * Hook compositor para gerenciar chat WebSocket (v1.3)
  * 
  * Combina 3 hooks especializados:
  * - useChatConnection: WebSocket, reconexão, heartbeat
  * - useChatAuth: Autenticação e persistência
  * - useChatMessages: Histórico de mensagens
+ * 
+ * Mudanças v1.3:
+ * - userId gerado pelo cliente (crypto.randomUUID)
+ * - Suporte a múltiplas conexões/dispositivos
+ * - Contadores mais precisos (uniqueUsers vs totalConnections)
+ * 
+ * @see .docs/chat/API_MIGRATION_GUIDE_2024_11_30.md
  * 
  * @example
  * ```tsx
@@ -56,52 +63,57 @@ export function useChatWebSocket({
     onAuthenticated: callbacks?.onAuthenticated,
   })
 
-  // Processar mensagem recebida
-  const handleMessage = useCallback((data: ChatMessage) => {
-    switch (data.type) {
-      case 'request-nickname':
-        auth.setUserId(data.userId || '')
-        
-        // Tentar autenticar com nickname salvo
-        const savedNickname = auth.getSavedNickname()
-        if (savedNickname && connection.connected) {
-          setTimeout(() => {
-            connection.send({
-              type: 'set-nickname',
-              nickname: savedNickname
-            })
-          }, 100)
-        }
-        break
-
-      case 'nickname-accepted':
-        auth.authenticate(data.nickname || '')
-        if (data.connections) messages.setOnlineCount(data.connections)
-        break
-
-      case 'chat-message':
-      case 'user-joined':
-      case 'user-left':
-      case 'connections-count':
-      case 'error':
-        messages.processServerMessage(data)
-        break
-
-      case 'pong':
-        // Processado internamente no useChatConnection
-        if (data.connections) messages.setOnlineCount(data.connections)
-        break
-    }
-  }, [auth, messages])
-
-  // Hook de conexão
+  // Hook de conexão (declarado antes do handleMessage para evitar referência circular)
   const connection = useChatConnection({
     url,
     autoConnect,
     maxReconnectAttempts,
     reconnectDelayBase,
     heartbeatInterval,
-    onMessage: handleMessage,
+    onMessage: (data: ChatMessage) => {
+      // Processar mensagem recebida (v1.3)
+      switch (data.type) {
+        case 'request-auth':  // v1.3: era request-nickname
+          // Salvar connectionId recebido do servidor
+          if (data.connectionId) {
+            connection.setConnectionId(data.connectionId)
+            auth.setConnectionId(data.connectionId)
+          }
+          
+          // Tentar autenticar com nickname salvo
+          const savedNickname = auth.getSavedNickname()
+          if (savedNickname && connection.connected) {
+            setTimeout(() => {
+              connection.send({
+                type: 'auth',              // v1.3: era set-nickname
+                userId: auth.userId,       // v1.3: cliente envia userId
+                nickname: savedNickname
+              })
+            }, 100)
+          }
+          break
+
+        case 'auth-accepted':  // v1.3: era nickname-accepted
+          auth.authenticate(data.nickname || '')
+          if (data.uniqueUsers) messages.setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
+          break
+
+        case 'chat-message':
+        case 'user-joined':
+        case 'user-left':
+        case 'new-connection':     // v1.3: Novo evento
+        case 'connection-closed':  // v1.3: Novo evento
+        case 'stats':              // v1.3: era connections-count
+        case 'error':
+          messages.processServerMessage(data)
+          break
+
+        case 'pong':
+          // Processado internamente no useChatConnection
+          if (data.uniqueUsers) messages.setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
+          break
+      }
+    },
     onConnected: callbacks?.onConnected,
     onDisconnected: () => {
       auth.deauthenticate()
@@ -109,7 +121,7 @@ export function useChatWebSocket({
     },
   })
 
-  // Definir nickname
+  // Definir nickname (v1.3)
   const setNickname = useCallback((nickname: string) => {
     if (!connection.connected) {
       messages.setError('Não conectado ao servidor')
@@ -117,10 +129,11 @@ export function useChatWebSocket({
     }
 
     return connection.send({
-      type: 'set-nickname',
+      type: 'auth',           // v1.3: era set-nickname
+      userId: auth.userId,    // v1.3: cliente envia userId
       nickname
     })
-  }, [connection, messages])
+  }, [connection, messages, auth.userId])
 
   // Enviar mensagem
   const sendMessage = useCallback((text: string) => {
@@ -140,9 +153,9 @@ export function useChatWebSocket({
     })
   }, [connection, auth.authenticated, messages])
 
-  // Obter contagem de conexões
-  const getConnectionsCount = useCallback(() => {
-    connection.send({ type: 'get-connections' })
+  // Obter estatísticas (v1.3: era getConnectionsCount)
+  const getStats = useCallback(() => {
+    connection.send({ type: 'get-stats' })  // v1.3: era get-connections
   }, [connection])
 
   // Ping manual
@@ -157,7 +170,8 @@ export function useChatWebSocket({
     // Estado
     connected: connection.connected,
     authenticated: auth.authenticated,
-    userId: auth.userId,
+    userId: auth.userId,               // v1.3: Sempre disponível (gerado no cliente)
+    connectionId: connection.connectionId,  // v1.3: ID da conexão específica
     nickname: auth.nickname,
     messages: messages.messages,
     onlineCount: messages.onlineCount,
@@ -170,7 +184,7 @@ export function useChatWebSocket({
     disconnect: connection.disconnect,
     setNickname,
     sendMessage,
-    getConnectionsCount,
+    getStats,                          // v1.3: era getConnectionsCount
     ping,
     
     // Informações de status

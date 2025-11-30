@@ -22,6 +22,7 @@ export const CHAT_CONFIG = {
   HEARTBEAT_INTERVAL: 30000, // 30 segundos
   
   // Chaves de persistência no localStorage
+  STORAGE_KEY_USER_ID: 'term-ooo-chat-user-id',        // v1.3: userId gerado pelo cliente
   STORAGE_KEY_NICKNAME: 'term-ooo-chat-nickname',
   STORAGE_KEY_CHAT_ENABLED: 'term-ooo-chat-enabled',
   STORAGE_KEY_CHAT_MINIMIZED: 'term-ooo-chat-minimized',

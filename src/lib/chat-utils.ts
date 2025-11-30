@@ -3,6 +3,66 @@
 
 import { CHAT_CONFIG } from './chat-config'
 
+// ============================================================
+// IDENTIFICAÇÃO DO USUÁRIO (v1.3)
+// ============================================================
+
+/**
+ * Gera um novo userId único usando crypto.randomUUID()
+ * Utilizado pela API v1.3 onde o cliente gera o userId
+ */
+export function generateUserId(): string {
+  // Usar crypto.randomUUID() se disponível (browsers modernos)
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  
+  // Fallback para ambientes sem crypto.randomUUID()
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
+/**
+ * Persiste userId no localStorage
+ */
+export function saveUserId(userId: string): void {
+  try {
+    localStorage.setItem(CHAT_CONFIG.STORAGE_KEY_USER_ID, userId)
+  } catch (error) {
+    console.warn('[Chat] Falha ao salvar userId:', error)
+  }
+}
+
+/**
+ * Recupera userId salvo do localStorage
+ */
+export function loadUserId(): string | null {
+  try {
+    return localStorage.getItem(CHAT_CONFIG.STORAGE_KEY_USER_ID)
+  } catch (error) {
+    console.warn('[Chat] Falha ao carregar userId:', error)
+    return null
+  }
+}
+
+/**
+ * Remove userId do localStorage
+ */
+export function clearUserId(): void {
+  try {
+    localStorage.removeItem(CHAT_CONFIG.STORAGE_KEY_USER_ID)
+  } catch (error) {
+    console.warn('[Chat] Falha ao limpar userId:', error)
+  }
+}
+
+// ============================================================
+// VALIDAÇÃO E SANITIZAÇÃO
+// ============================================================
+
 /**
  * Sanitiza e valida nickname do usuário
  * Remove caracteres perigosos e limita tamanho

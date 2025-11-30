@@ -71,12 +71,12 @@ export function useChatMessages({
     setState(prev => ({ ...prev, messages: [] }))
   }, [])
 
-  // Processar mensagem do servidor
+  // Processar mensagem do servidor (v1.3)
   const processServerMessage = useCallback((data: ChatMessage) => {
     switch (data.type) {
       case 'chat-message':
         addMessage(data)
-        if (data.connections) setOnlineCount(data.connections)
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
         break
 
       case 'user-joined':
@@ -87,7 +87,7 @@ export function useChatMessages({
             text: data.message || `${data.nickname} entrou no chat`,
           })
         }
-        if (data.connections) setOnlineCount(data.connections)
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
         onUserJoined?.(data.nickname || '')
         break
 
@@ -99,12 +99,36 @@ export function useChatMessages({
             text: data.message || `${data.nickname} saiu do chat`,
           })
         }
-        if (data.connections) setOnlineCount(data.connections)
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
         onUserLeft?.(data.nickname || '')
         break
 
-      case 'connections-count':
-        if (data.connections) setOnlineCount(data.connections)
+      // v1.3: Nova conexão do mesmo userId (múltiplas abas)
+      case 'new-connection':
+        if (CHAT_CONFIG.SHOW_SYSTEM_MESSAGES) {
+          addMessage({
+            ...data,
+            type: 'system',
+            text: data.message || `Nova aba/dispositivo conectado (${data.totalUserConnections} ativas)`,
+          })
+        }
+        break
+
+      // v1.3: Conexão do mesmo userId fechou
+      case 'connection-closed':
+        if (CHAT_CONFIG.SHOW_SYSTEM_MESSAGES) {
+          addMessage({
+            ...data,
+            type: 'system',
+            text: data.message || `Aba/dispositivo desconectado (${data.totalUserConnections} restantes)`,
+          })
+        }
+        break
+
+      // v1.3: stats (substitui connections-count)
+      case 'stats':
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)
+        // data.myConnections disponível para uso futuro
         break
 
       case 'error':
