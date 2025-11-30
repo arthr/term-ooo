@@ -33,12 +33,10 @@ export function useChatMessages({
     error: null,
   })
 
-  // Adicionar mensagem
   const addMessage = useCallback((message: ChatMessage) => {
     setState(prev => {
       const newMessages = [...prev.messages, message]
       
-      // Limitar quantidade
       if (newMessages.length > maxMessages) {
         newMessages.shift()
       }
@@ -49,34 +47,29 @@ export function useChatMessages({
     onMessage?.(message)
   }, [maxMessages, onMessage])
 
-  // Atualizar contador de usuários
   const setOnlineCount = useCallback((count: number) => {
     setState(prev => ({ ...prev, onlineCount: count }))
   }, [])
 
-  // Definir erro
   const setError = useCallback((error: string) => {
     const friendlyError = getFriendlyErrorMessage(error)
     setState(prev => ({ ...prev, error: friendlyError }))
     onError?.(friendlyError)
     
-    // Limpar erro após 5s
     setTimeout(() => {
       setState(prev => ({ ...prev, error: null }))
     }, 5000)
   }, [onError])
 
-  // Limpar mensagens
   const clearMessages = useCallback(() => {
     setState(prev => ({ ...prev, messages: [] }))
   }, [])
 
-  // Processar mensagem do servidor (v1.3)
   const processServerMessage = useCallback((data: ChatMessage) => {
     switch (data.type) {
       case 'chat-message':
         addMessage(data)
-        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)
         break
 
       case 'user-joined':
@@ -87,7 +80,7 @@ export function useChatMessages({
             text: data.message || `${data.nickname} entrou no chat`,
           })
         }
-        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)
         onUserJoined?.(data.nickname || '')
         break
 
@@ -99,36 +92,22 @@ export function useChatMessages({
             text: data.message || `${data.nickname} saiu do chat`,
           })
         }
-        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)  // v1.3: connections → uniqueUsers
+        if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)
         onUserLeft?.(data.nickname || '')
         break
 
-      // v1.3: Nova conexão do mesmo userId (múltiplas abas)
-      case 'new-connection':
+      case 'session-replaced':
         if (CHAT_CONFIG.SHOW_SYSTEM_MESSAGES) {
           addMessage({
             ...data,
             type: 'system',
-            text: data.message || `Nova aba/dispositivo conectado (${data.totalUserConnections} ativas)`,
+            text: data.message || 'Sua sessão foi substituída por uma nova conexão',
           })
         }
         break
 
-      // v1.3: Conexão do mesmo userId fechou
-      case 'connection-closed':
-        if (CHAT_CONFIG.SHOW_SYSTEM_MESSAGES) {
-          addMessage({
-            ...data,
-            type: 'system',
-            text: data.message || `Aba/dispositivo desconectado (${data.totalUserConnections} restantes)`,
-          })
-        }
-        break
-
-      // v1.3: stats (substitui connections-count)
       case 'stats':
         if (data.uniqueUsers) setOnlineCount(data.uniqueUsers)
-        // data.myConnections disponível para uso futuro
         break
 
       case 'error':

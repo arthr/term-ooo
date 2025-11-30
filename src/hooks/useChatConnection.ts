@@ -1,5 +1,5 @@
 // src/hooks/useChatConnection.ts
-// Hook para gerenciar conexão WebSocket, reconexão e heartbeat (v1.3)
+// Hook para gerenciar conexão WebSocket, reconexão e heartbeat
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { CHAT_CONFIG } from '@/lib/chat-config'
@@ -8,7 +8,7 @@ interface ConnectionState {
   connected: boolean
   isConnecting: boolean
   latency: number | null
-  connectionId: string | null  // v1.3: ID da conexão específica
+  connectionId: string | null
 }
 
 interface UseChatConnectionProps {
@@ -167,7 +167,6 @@ export function useChatConnection({
     return false
   }, [])
 
-  // v1.3: Salvar connectionId recebido do servidor
   const setConnectionId = useCallback((connectionId: string) => {
     setState(prev => ({ ...prev, connectionId }))
   }, [])
@@ -193,7 +192,7 @@ export function useChatConnection({
     connect,
     disconnect,
     send,
-    setConnectionId,  // v1.3: Expor método
+    setConnectionId,
   }
 }
 

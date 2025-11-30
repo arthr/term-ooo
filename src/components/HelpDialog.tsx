@@ -1,7 +1,7 @@
 // src/components/HelpDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollArea } from './ui/scroll-area'
-import { Tile } from './Tile'
+import { Tile } from '../components/new/Tile'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 import { DialogShell } from './DialogShell'
 
@@ -47,11 +47,11 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                   <div>
                     <p className="font-semibold mb-2">Exemplos:</p>
               <div className="flex gap-1 mb-2">
-                <Tile letter="T" state="correct" />
-                <Tile letter="E" state="empty" />
-                <Tile letter="R" state="empty" />
-                <Tile letter="M" state="empty" />
-                <Tile letter="O" state="empty" />
+                <Tile letter="T" state="correct" gameMode="uno" />
+                <Tile letter="E" state="empty" gameMode="uno" />
+                <Tile letter="R" state="empty" gameMode="uno" />
+                <Tile letter="M" state="empty" gameMode="uno" />
+                <Tile letter="O" state="empty" gameMode="uno" />
               </div>
               <p className="text-xs text-gray-300">
                 A letra <strong>T</strong> faz parte da palavra e está na posição correta.
@@ -60,11 +60,11 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             
             <div>
               <div className="flex gap-1 mb-2">
-                <Tile letter="P" state="empty" />
-                <Tile letter="I" state="present" />
-                <Tile letter="L" state="empty" />
-                <Tile letter="H" state="empty" />
-                <Tile letter="A" state="empty" />
+                <Tile letter="P" state="empty" gameMode="uno" />
+                <Tile letter="I" state="present" gameMode="uno" />
+                <Tile letter="L" state="empty" gameMode="uno" />
+                <Tile letter="H" state="empty" gameMode="uno" />
+                <Tile letter="A" state="empty" gameMode="uno" />
               </div>
               <p className="text-xs text-gray-300">
                 A letra <strong>I</strong> faz parte da palavra, mas está na posição errada.
@@ -73,11 +73,11 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
             
             <div>
               <div className="flex gap-1 mb-2">
-                <Tile letter="F" state="empty" />
-                <Tile letter="U" state="empty" />
-                <Tile letter="N" state="absent" />
-                <Tile letter="D" state="empty" />
-                <Tile letter="O" state="empty" />
+                <Tile letter="F" state="empty" gameMode="uno" />
+                <Tile letter="U" state="empty" gameMode="uno" />
+                <Tile letter="N" state="absent" gameMode="uno" />
+                <Tile letter="D" state="empty" gameMode="uno" />
+                <Tile letter="O" state="empty" gameMode="uno" />
               </div>
                     <p className="text-xs text-gray-300">
                       A letra <strong>N</strong> não faz parte da palavra.

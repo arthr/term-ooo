@@ -3,21 +3,14 @@
 
 import { CHAT_CONFIG } from './chat-config'
 
-// ============================================================
-// IDENTIFICAÇÃO DO USUÁRIO (v1.3)
-// ============================================================
-
 /**
  * Gera um novo userId único usando crypto.randomUUID()
- * Utilizado pela API v1.3 onde o cliente gera o userId
  */
 export function generateUserId(): string {
-  // Usar crypto.randomUUID() se disponível (browsers modernos)
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID()
   }
   
-  // Fallback para ambientes sem crypto.randomUUID()
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = Math.random() * 16 | 0
     const v = c === 'x' ? r : (r & 0x3 | 0x8)
@@ -25,9 +18,6 @@ export function generateUserId(): string {
   })
 }
 
-/**
- * Persiste userId no localStorage
- */
 export function saveUserId(userId: string): void {
   try {
     localStorage.setItem(CHAT_CONFIG.STORAGE_KEY_USER_ID, userId)
@@ -36,9 +26,6 @@ export function saveUserId(userId: string): void {
   }
 }
 
-/**
- * Recupera userId salvo do localStorage
- */
 export function loadUserId(): string | null {
   try {
     return localStorage.getItem(CHAT_CONFIG.STORAGE_KEY_USER_ID)
@@ -48,9 +35,6 @@ export function loadUserId(): string | null {
   }
 }
 
-/**
- * Remove userId do localStorage
- */
 export function clearUserId(): void {
   try {
     localStorage.removeItem(CHAT_CONFIG.STORAGE_KEY_USER_ID)
@@ -59,25 +43,13 @@ export function clearUserId(): void {
   }
 }
 
-// ============================================================
-// VALIDAÇÃO E SANITIZAÇÃO
-// ============================================================
-
-/**
- * Sanitiza e valida nickname do usuário
- * Remove caracteres perigosos e limita tamanho
- */
 export function sanitizeNickname(nickname: string): string {
   return nickname
     .trim()
     .slice(0, CHAT_CONFIG.MAX_NICKNAME_LENGTH)
-    .replace(/[<>'"]/g, '') // Remove caracteres potencialmente perigosos
-    .replace(/\s+/g, ' ') // Normaliza espaços múltiplos
+    .replace(/[<>'"]/g, '')
+    .replace(/\s+/g, ' ')
 }
-
-/**
- * Valida se nickname está dentro das regras
- */
 export function isValidNickname(nickname: string): boolean {
   const cleaned = sanitizeNickname(nickname)
   return (
@@ -86,29 +58,17 @@ export function isValidNickname(nickname: string): boolean {
   )
 }
 
-/**
- * Sanitiza mensagem do usuário
- * Remove HTML/scripts mas mantém conteúdo útil
- */
 export function sanitizeMessage(text: string): string {
   return text
     .trim()
     .slice(0, CHAT_CONFIG.MAX_MESSAGE_LENGTH)
-    .replace(/[<>]/g, '') // Previne injeção de HTML
+    .replace(/[<>]/g, '')
 }
-
-/**
- * Valida se mensagem é válida para envio
- */
 export function isValidMessage(text: string): boolean {
   const cleaned = sanitizeMessage(text)
   return cleaned.length > 0 && cleaned.length <= CHAT_CONFIG.MAX_MESSAGE_LENGTH
 }
 
-/**
- * Formata timestamp do servidor para exibição
- * Exemplo: "14:30" ou "Ontem às 14:30"
- */
 export function formatChatTimestamp(timestamp: string): string {
   try {
     const date = new Date(timestamp)
@@ -120,19 +80,16 @@ export function formatChatTimestamp(timestamp: string): string {
     const minutes = String(date.getMinutes()).padStart(2, '0')
     const time = `${hours}:${minutes}`
     
-    // Hoje - apenas hora
     if (messageDate.getTime() === today.getTime()) {
       return time
     }
     
-    // Ontem
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
     if (messageDate.getTime() === yesterday.getTime()) {
       return `Ontem ${time}`
     }
     
-    // Mais antigo - data completa
     const day = String(date.getDate()).padStart(2, '0')
     const month = String(date.getMonth() + 1).padStart(2, '0')
     return `${day}/${month} ${time}`
@@ -141,10 +98,6 @@ export function formatChatTimestamp(timestamp: string): string {
   }
 }
 
-/**
- * Formata latência para exibição
- * Exemplo: "42ms" ou "1.2s"
- */
 export function formatLatency(latency: number | null): string {
   if (latency === null) return '---'
   
@@ -155,10 +108,6 @@ export function formatLatency(latency: number | null): string {
   return `${(latency / 1000).toFixed(1)}s`
 }
 
-/**
- * Obtém cor baseada na latência
- * Verde: < 100ms, Amarelo: 100-300ms, Vermelho: > 300ms
- */
 export function getLatencyColor(latency: number | null): string {
   if (latency === null) return 'text-gray-500'
   
@@ -167,9 +116,6 @@ export function getLatencyColor(latency: number | null): string {
   return 'text-red-500'
 }
 
-/**
- * Persiste nickname no localStorage
- */
 export function saveNickname(nickname: string): void {
   try {
     localStorage.setItem(CHAT_CONFIG.STORAGE_KEY_NICKNAME, nickname)
@@ -178,9 +124,6 @@ export function saveNickname(nickname: string): void {
   }
 }
 
-/**
- * Recupera nickname salvo do localStorage
- */
 export function loadNickname(): string | null {
   try {
     return localStorage.getItem(CHAT_CONFIG.STORAGE_KEY_NICKNAME)
@@ -190,9 +133,6 @@ export function loadNickname(): string | null {
   }
 }
 
-/**
- * Remove nickname do localStorage
- */
 export function clearNickname(): void {
   try {
     localStorage.removeItem(CHAT_CONFIG.STORAGE_KEY_NICKNAME)
@@ -201,9 +141,6 @@ export function clearNickname(): void {
   }
 }
 
-/**
- * Persiste estado do chat (aberto/minimizado)
- */
 export function saveChatMinimized(minimized: boolean): void {
   try {
     localStorage.setItem(CHAT_CONFIG.STORAGE_KEY_CHAT_MINIMIZED, String(minimized))
@@ -212,21 +149,15 @@ export function saveChatMinimized(minimized: boolean): void {
   }
 }
 
-/**
- * Recupera estado do chat
- */
 export function loadChatMinimized(): boolean {
   try {
     const value = localStorage.getItem(CHAT_CONFIG.STORAGE_KEY_CHAT_MINIMIZED)
     return value === 'true'
   } catch (error) {
-    return true // Padrão: minimizado
+    return true
   }
 }
 
-/**
- * Gera mensagem de erro amigável baseada no tipo
- */
 export function getFriendlyErrorMessage(errorMessage: string): string {
   if (errorMessage.includes('já está em uso')) {
     return 'Este nickname já está sendo usado. Tente outro!'
@@ -243,11 +174,9 @@ export function getFriendlyErrorMessage(errorMessage: string): string {
   return errorMessage
 }
 
-/**
- * Trunca texto longo para preview
- */
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text
   return text.slice(0, maxLength - 3) + '...'
 }
+
 

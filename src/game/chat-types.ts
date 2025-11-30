@@ -2,8 +2,7 @@
 // Tipos TypeScript para o sistema de chat WebSocket
 
 /**
- * Tipos de mensagens do WebSocket Chat API v1.3
- * @see .docs/chat/WEBSOCKET_INTEGRATION.md
+ * Tipos de mensagens do WebSocket Chat API v1.5
  */
 export type ChatMessageType = 
   // Mensagens de chat
@@ -11,18 +10,16 @@ export type ChatMessageType =
   | 'user-joined' 
   | 'user-left' 
   | 'system'
-  // Autenticação (v1.3)
-  | 'request-auth'       // Server solicita autenticação
-  | 'auth'               // Cliente envia credenciais
-  | 'auth-accepted'      // Server confirma autenticação
-  // Multi-conexão (v1.3)
-  | 'new-connection'     // Nova aba/dispositivo do mesmo usuário
-  | 'connection-closed'  // Aba/dispositivo desconectou
+  // Autenticação
+  | 'request-auth'
+  | 'auth'
+  | 'auth-accepted'
+  | 'session-replaced'
   // Estatísticas e controle
-  | 'stats'              // Estatísticas detalhadas
-  | 'ping'               // Cliente → Server (heartbeat)
-  | 'pong'               // Server → Cliente (heartbeat response)
-  | 'error'              // Erro do servidor
+  | 'stats'
+  | 'ping'
+  | 'pong'
+  | 'error'
 
 export interface ChatMessage {
   type: ChatMessageType
@@ -33,19 +30,16 @@ export interface ChatMessage {
   
   // Identificação
   nickname?: string
-  userId?: string           // UUID do usuário (gerado pelo cliente)
-  connectionId?: string     // ID da conexão específica (gerado pelo servidor)
+  userId?: string
+  connectionId?: string
   
-  // Contadores (v1.3)
-  uniqueUsers?: number           // Usuários únicos por userId
-  totalConnections?: number      // Total de conexões WebSocket
-  totalUserConnections?: number  // Conexões do mesmo userId
-  myConnections?: number         // Suas conexões (em stats)
+  // Contadores
+  uniqueUsers?: number
+  totalConnections?: number
   
   // Controle
   timestamp: string
-  time?: number                  // Timestamp para ping/pong
-  isNewConnection?: boolean      // Se é nova conexão do mesmo userId
+  time?: number
 }
 
 export interface ChatUser {

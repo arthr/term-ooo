@@ -16,28 +16,27 @@ export const CHAT_CONFIG = {
   
   // Configurações de reconexão
   MAX_RECONNECT_ATTEMPTS: 5,
-  RECONNECT_DELAY_BASE: 1000, // ms - exponencial backoff
+  RECONNECT_DELAY_BASE: 1000,
   
-  // Heartbeat para manter conexão viva
-  HEARTBEAT_INTERVAL: 30000, // 30 segundos
+  // Heartbeat
+  HEARTBEAT_INTERVAL: 30000,
   
   // Chaves de persistência no localStorage
-  STORAGE_KEY_USER_ID: 'term-ooo-chat-user-id',        // v1.3: userId gerado pelo cliente
+  STORAGE_KEY_USER_ID: 'term-ooo-chat-user-id',
   STORAGE_KEY_NICKNAME: 'term-ooo-chat-nickname',
   STORAGE_KEY_CHAT_ENABLED: 'term-ooo-chat-enabled',
   STORAGE_KEY_CHAT_MINIMIZED: 'term-ooo-chat-minimized',
   
   // UI/UX
-  AUTO_SCROLL_THRESHOLD: 100, // pixels do fundo para auto-scroll
-  MESSAGE_ANIMATION_DURATION: 200, // ms
-  TYPING_INDICATOR_TIMEOUT: 3000, // ms (futuro)
+  AUTO_SCROLL_THRESHOLD: 100,
+  MESSAGE_ANIMATION_DURATION: 200,
+  TYPING_INDICATOR_TIMEOUT: 3000,
   
   // Notificações
   SHOW_JOIN_LEAVE_NOTIFICATIONS: true,
   SHOW_SYSTEM_MESSAGES: true,
 } as const
 
-// Validar configuração na inicialização (dev mode)
 if (import.meta.env.DEV) {
   if (!CHAT_CONFIG.WS_URL.startsWith('ws://') && !CHAT_CONFIG.WS_URL.startsWith('wss://')) {
     console.warn('[Chat] URL do WebSocket inválida:', CHAT_CONFIG.WS_URL)

@@ -21,8 +21,10 @@ export function ChatButton({
     <button
       onClick={onClick}
       className={`
-        fixed bottom-4 right-4
-        w-14 h-14 rounded-full
+        fixed bottom-40 right-4
+        md:bottom-4
+        size-10 rounded-full
+        md:size-14
         bg-gradient-to-br from-blue-600 to-blue-800
         hover:from-blue-500 hover:to-blue-700
         text-white shadow-lg
@@ -36,18 +38,18 @@ export function ChatButton({
       aria-label="Abrir chat"
       title={connected ? `${onlineCount} usuários online` : 'Chat desconectado'}
     >
-      <MessageCircle className="w-6 h-6" />
+      <MessageCircle className="size-5" />
       
       {/* Badge com contador de usuários online */}
       {connected && onlineCount > 0 && (
-        <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-gray-900">
+        <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[11px] md:text-sm font-bold rounded-full size-5 md:size-6 flex items-center justify-center border-2 border-gray-900">
           {onlineCount > 99 ? '99+' : onlineCount}
         </span>
       )}
       
       {/* Indicador de desconexão */}
       {!connected && (
-        <span className="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-gray-900 animate-pulse" />
+        <span className="absolute -top-1 -right-1 bg-red-500 size-3 md:size-4 rounded-full border-2 border-gray-900 animate-pulse" />
       )}
     </button>
   )
