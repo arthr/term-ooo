@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { cn } from '@/lib/utils'
 import { TileState } from '@/game/types'
+import { GlowingEffect } from "../ui/glowing-effect";
 
 interface TileProps {
   letter: string;
@@ -99,7 +100,7 @@ export function Tile({
   return (
     <motion.div
       initial={false}
-      animate={shouldPop ? { scale: [1, 1.1, 1] } : {}}
+      animate={shouldPop ? { scale: [1, 1.3, 1] } : {scale: 1}}
       transition={{ duration: 0.15 }}
       onClick={onClick}
       className={cn(
@@ -117,6 +118,14 @@ export function Tile({
         '--tile-color': getTileColor(),
       } as React.CSSProperties}
     >
+      <GlowingEffect
+          spread={80}
+          glow={true}
+          disabled={false}
+          borderWidth={2}
+          proximity={94}
+          inactiveZone={0.01}
+        />
       <span
         className={cn('text-white uppercase font-extrabold', getFontSizeClasses())}
       >

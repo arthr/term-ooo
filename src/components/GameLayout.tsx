@@ -71,7 +71,7 @@ export function GameLayout({
   };
 
   return (
-    <div className="w-full flex-1 flex items-center justify-center min-h-0">
+    <div className="w-full flex-1 flex items-center justify-center min-h-0 z-10">
       <div
         className={`grid ${getGridLayout()} ${getGapClasses()} w-full`}
       >

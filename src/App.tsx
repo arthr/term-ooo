@@ -24,6 +24,7 @@ import { usePersistentGameState } from './hooks/usePersistentGameState'
 import { useStatsTracker } from './hooks/useStatsTracker'
 import { useChatWebSocket } from './hooks/useChatWebSocket'
 import { CHAT_CONFIG } from './lib/chat-config'
+import { StarsBackground } from './components/animate-ui/components/backgrounds/stars'
 
 function Game() {
   const navigate = useNavigate()
@@ -45,7 +46,7 @@ function Game() {
 
   // Estado do chat integrado ao dialogManager
   const chatOpen = dialogManager.isOpen('chat')
-  
+
   // Marcar mensagens como lidas quando abrir o chat
   useEffect(() => {
     if (chatOpen) {
@@ -265,7 +266,7 @@ function Game() {
           happyBoards={happyBoards}
         />
 
-        <div className="w-full mt-2 sm:mt-4 md:mt-6 max-w-2xl mx-auto flex-shrink-0">
+        <div className="w-full mt-2 sm:mt-4 md:mt-6 max-w-2xl mx-auto flex-shrink-0 z-10">
           <Keyboard
             keyStates={gameState.keyStates}
             onKeyPress={handleKey}
@@ -273,11 +274,13 @@ function Game() {
             disabled={gameState.isGameOver}
           />
         </div>
+        <StarsBackground className="fixed inset-0 z-0 max-h-dvh max-w-full opacity-30"
+        pointerEvents={false} />
       </main>
 
-      <HelpDialog 
-        open={dialogManager.dialogs.help.open} 
-        onOpenChange={(open) => !open && dialogManager.closeDialog()} 
+      <HelpDialog
+        open={dialogManager.dialogs.help.open}
+        onOpenChange={(open) => !open && dialogManager.closeDialog()}
       />
 
       <StatsDialog
@@ -351,6 +354,7 @@ function Game() {
           />
         </>
       )}
+
     </div>
   )
 }

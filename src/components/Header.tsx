@@ -64,7 +64,7 @@ export function Header({
   }
 
   return (
-    <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm flex-shrink-0">
+    <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm flex-shrink-0 z-10">
       {/* Áudio do Bodão (oculto) */}
       <audio
         ref={audioRef}

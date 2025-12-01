@@ -122,8 +122,13 @@ function Key({
             return "#64748b";
         }
       });
+      // Mapeamento visual dos quadrantes (sentido horário a partir do topo-direita):
+      // Board 1 (0-90°): quadrante superior direito
+      // Board 3 (90-180°): quadrante inferior direito  
+      // Board 2 (180-270°): quadrante inferior esquerdo
+      // Board 0 (270-360°): quadrante superior esquerdo
       return {
-        background: `conic-gradient(from 0deg, ${colors[0]} 0deg 90deg, ${colors[1]} 90deg 180deg, ${colors[2]} 180deg 270deg, ${colors[3]} 270deg 360deg)`,
+        background: `conic-gradient(from 0deg, ${colors[1]} 0deg 90deg, ${colors[3]} 90deg 180deg, ${colors[2]} 180deg 270deg, ${colors[0]} 270deg 360deg)`,
       };
     }
     return {};
@@ -216,7 +221,7 @@ export function Keyboard({
   };
 
   return (
-    <div className="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5">
+    <div className="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5 z-10">
       {KEYBOARD_ROWS.map((row, rowIndex) => (
         <div
           key={rowIndex}
