@@ -7,16 +7,10 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
-import { ScrollArea } from './ui/scroll-area'
 import { Coffee, Zap, Code, Heart, Trophy, Tv, Gamepad2, Github, Linkedin, Instagram } from 'lucide-react'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
+import { DialogShell } from './DialogShell'
+import { ResponsiveScrollArea } from './ui/responsive-scroll-area'
 
 interface AboutDialogProps {
   open: boolean
@@ -56,18 +50,20 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-green-600 max-h-[90vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-            A História Por Trás do Clone
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            História épica da criação do clone Term.ooo
-          </DialogDescription>
-        </DialogHeader>
-
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6">
+    <DialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="A História Por Trás do Clone"
+      description="História épica da criação do clone Term.ooo"
+      borderColor="border-green-600"
+      titleGradientClassName="bg-gradient-to-r from-green-400 to-blue-500"
+      maxWidth="2xl"
+      maxHeight="90vh"
+    >
+      <ResponsiveScrollArea 
+        desktopClassName="max-h-[calc(90vh-80px)] px-6"
+        mobileClassName="h-[calc(100dvh-8rem)] px-4"
+      >
           <AnimatePresence>
             {open && (
               <motion.div
@@ -310,9 +306,8 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
               </motion.div>
             )}
           </AnimatePresence>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveScrollArea>
+    </DialogShell>
   )
 }
 

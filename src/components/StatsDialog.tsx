@@ -1,7 +1,6 @@
 // src/components/StatsDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
 import Countdown from 'react-countdown'
-import { ScrollArea } from './ui/scroll-area'
 import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
 import { getResultMessage, generateShareText } from '@/game/engine'
@@ -10,6 +9,7 @@ import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 import { useTemporaryState } from '@/hooks/useTemporaryState'
 import { getNextMidnightTimestamp } from '@/lib/dates'
 import { DialogShell } from './DialogShell'
+import { ResponsiveScrollArea } from './ui/responsive-scroll-area'
 
 interface StatsDialogProps {
   open: boolean
@@ -68,7 +68,10 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
       borderColor="border-yellow-600"
       titleGradientClassName="bg-gradient-to-r from-yellow-400 to-orange-500"
     >
-      <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
+      <ResponsiveScrollArea 
+        desktopClassName="max-h-[calc(85vh-80px)] px-6"
+        mobileClassName="h-[calc(100dvh-10rem)] px-4"
+      >
           <AnimatePresence>
             {open && (
               <motion.div
@@ -182,7 +185,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
               </motion.div>
             )}
           </AnimatePresence>
-      </ScrollArea>
+      </ResponsiveScrollArea>
     </DialogShell>
   )
 }

@@ -1,9 +1,9 @@
 // src/components/HelpDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
-import { ScrollArea } from './ui/scroll-area'
 import { Tile } from '../components/new/Tile'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 import { DialogShell } from './DialogShell'
+import { ResponsiveScrollArea } from './ui/responsive-scroll-area'
 
 interface HelpDialogProps {
   open: boolean
@@ -26,7 +26,10 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
       borderColor="border-blue-600"
       titleGradientClassName="bg-gradient-to-r from-blue-400 to-cyan-500"
     >
-      <ScrollArea className="max-h-[calc(85vh-80px)] px-6">
+      <ResponsiveScrollArea 
+        desktopClassName="max-h-[calc(85vh-80px)] px-6"
+        mobileClassName="h-[calc(100dvh-10rem)] px-4"
+      >
           <AnimatePresence>
             {open && (
               <motion.div
@@ -99,7 +102,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
               </motion.div>
             )}
           </AnimatePresence>
-      </ScrollArea>
+      </ResponsiveScrollArea>
     </DialogShell>
   )
 }

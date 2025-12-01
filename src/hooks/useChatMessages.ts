@@ -14,6 +14,7 @@ interface MessagesState {
 
 interface UseChatMessagesProps {
   maxMessages?: number
+  currentUserId?: string
   onMessage?: (message: ChatMessage) => void
   onUserJoined?: (nickname: string) => void
   onUserLeft?: (nickname: string) => void
@@ -22,6 +23,7 @@ interface UseChatMessagesProps {
 
 export function useChatMessages({
   maxMessages = CHAT_CONFIG.MAX_STORED_MESSAGES,
+  currentUserId,
   onMessage,
   onUserJoined,
   onUserLeft,
@@ -32,6 +34,8 @@ export function useChatMessages({
     onlineCount: 0,
     error: null,
   })
+  
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const addMessage = useCallback((message: ChatMessage) => {
     setState(prev => {
@@ -44,8 +48,13 @@ export function useChatMessages({
       return { ...prev, messages: newMessages }
     })
     
+    // Incrementar não lidas se é mensagem de chat e não é mensagem própria
+    if (message.type === 'chat-message' && message.userId !== currentUserId) {
+      setUnreadCount(prev => prev + 1)
+    }
+    
     onMessage?.(message)
-  }, [maxMessages, onMessage])
+  }, [maxMessages, onMessage, currentUserId])
 
   const setOnlineCount = useCallback((count: number) => {
     setState(prev => ({ ...prev, onlineCount: count }))
@@ -63,6 +72,10 @@ export function useChatMessages({
 
   const clearMessages = useCallback(() => {
     setState(prev => ({ ...prev, messages: [] }))
+  }, [])
+  
+  const markAsRead = useCallback(() => {
+    setUnreadCount(0)
   }, [])
 
   const processServerMessage = useCallback((data: ChatMessage) => {
@@ -118,10 +131,12 @@ export function useChatMessages({
 
   return {
     ...state,
+    unreadCount,
     addMessage,
     setOnlineCount,
     setError,
     clearMessages,
+    markAsRead,
     processServerMessage,
   }
 }

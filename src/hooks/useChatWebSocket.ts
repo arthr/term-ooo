@@ -30,16 +30,17 @@ export function useChatWebSocket({
   callbacks
 }: UseChatWebSocketProps = {}) {
   
+  const auth = useChatAuth({
+    onAuthenticated: callbacks?.onAuthenticated,
+  })
+  
   const messages = useChatMessages({
     maxMessages: maxStoredMessages,
+    currentUserId: auth.userId,
     onMessage: callbacks?.onMessage,
     onUserJoined: callbacks?.onUserJoined,
     onUserLeft: callbacks?.onUserLeft,
     onError: callbacks?.onError,
-  })
-
-  const auth = useChatAuth({
-    onAuthenticated: callbacks?.onAuthenticated,
   })
 
   const connection = useChatConnection({
@@ -144,6 +145,7 @@ export function useChatWebSocket({
     nickname: auth.nickname,
     messages: messages.messages,
     onlineCount: messages.onlineCount,
+    unreadCount: messages.unreadCount,
     error: messages.error,
     latency: connection.latency,
     isConnecting: connection.isConnecting,
@@ -155,6 +157,7 @@ export function useChatWebSocket({
     sendMessage,
     getStats,
     ping,
+    markAsRead: messages.markAsRead,
     
     canSendMessages: connection.connected && auth.authenticated,
   }
