@@ -1,15 +1,10 @@
 // src/components/SettingsDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
 import { Switch } from './ui/switch'
 import { Settings } from '@/game/types'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
+import { DialogShell } from './DialogShell'
+import { useResponsiveDialog } from './ui/responsive-dialog'
 
 interface SettingsDialogProps {
   open: boolean
@@ -40,18 +35,16 @@ export function SettingsDialog({
   })
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-purple-600 p-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-            Configurações
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Configurações do jogo incluindo modo difícil e alto contraste
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="px-6 pb-6">
+    <DialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Configurações"
+      description="Configurações do jogo incluindo modo difícil e alto contraste"
+      borderColor="border-purple-600"
+      titleGradientClassName="bg-gradient-to-r from-purple-400 to-pink-500"
+      maxHeight="none"
+    >
+      <ContentWrapper>
           <AnimatePresence>
             {open && (
               <motion.div
@@ -114,9 +107,17 @@ export function SettingsDialog({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-      </DialogContent>
-    </Dialog>
+      </ContentWrapper>
+    </DialogShell>
+  )
+}
+
+function ContentWrapper({ children }: { children: React.ReactNode }) {
+  const { isDesktop } = useResponsiveDialog()
+  return (
+    <div className={isDesktop ? "px-6 pb-6" : "px-4 pb-6 h-[calc(100dvh-8rem)] overflow-y-auto"}>
+      {children}
+    </div>
   )
 }
 

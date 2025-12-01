@@ -1,17 +1,12 @@
 // src/components/DevModeDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog'
 import { Button } from './ui/button'
 import { Trash2, Eye, SkipForward, Trophy } from 'lucide-react'
 import { GameState } from '@/game/types'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 import { useTemporaryState } from '@/hooks/useTemporaryState'
+import { DialogShell } from './DialogShell'
+import { useResponsiveDialog } from './ui/responsive-dialog'
 
 interface DevModeDialogProps {
   open: boolean
@@ -44,18 +39,17 @@ export function DevModeDialog({
   })
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 border-red-500 p-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-red-400 to-orange-500 bg-clip-text text-transparent">
-            🔓 Dev Mode
-          </DialogTitle>
-          <DialogDescription className="text-center text-gray-400 text-sm">
-            Ferramentas de desenvolvimento
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="px-6 pb-6">
+    <DialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="🔓 Dev Mode"
+      description="Ferramentas de desenvolvimento"
+      borderColor="border-red-500"
+      titleGradientClassName="bg-gradient-to-r from-red-400 to-orange-500"
+      maxHeight="none"
+      showDescription={true}
+    >
+      <ContentWrapper>
           <AnimatePresence>
             {open && (
               <motion.div
@@ -133,9 +127,17 @@ export function DevModeDialog({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-      </DialogContent>
-    </Dialog>
+      </ContentWrapper>
+    </DialogShell>
+  )
+}
+
+function ContentWrapper({ children }: { children: React.ReactNode }) {
+  const { isDesktop } = useResponsiveDialog()
+  return (
+    <div className={isDesktop ? "px-6 pb-6" : "px-4 pb-6 h-[calc(100dvh-8rem)] overflow-y-auto"}>
+      {children}
+    </div>
   )
 }
 
