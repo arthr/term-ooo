@@ -1,6 +1,6 @@
 // src/game/engine.ts
 import { normalizeString } from '@/lib/utils'
-import { 
+import {
   getDayNumber as getDayNumberFromDates,
   getDateFromDayNumber as getDateFromDayNumberDates,
   getDayNumberFromDate as getDayNumberFromDateDates
@@ -286,11 +286,40 @@ export function processGuess(
 export function getResultMessage(state: GameState): string {
   if (!state.isGameOver) return ''
 
+  const minAttemps = () => {
+    switch (state.mode) {
+      case 'termo':
+        return {
+          first: 1,
+          second: 2,
+          third: 3,
+        }
+      case 'dueto':
+        return {
+          first: 2,
+          second: 3,
+          third: 4,
+        }
+      case 'quarteto':
+        return {
+          first: 4,
+          second: 5,
+          third: 6,
+        }
+      default:
+        return {
+          first: 1,
+          second: 2,
+          third: 3,
+        }
+    }
+  }
+
   if (state.isWin) {
     const attempts = state.currentRow
-    if (attempts <= 1) return '🥇 Fenomenal!'
-    if (attempts <= 2) return '🥈 Excelente!'
-    if (attempts <= 3) return '🥉 Bom!'
+    if (attempts <= minAttemps().first) return '🥇 Fenomenal!'
+    if (attempts <= minAttemps().second) return '🥈 Excelente!'
+    if (attempts <= minAttemps().third) return '🥉 Bom!'
     return '🎉 Conseguiu!'
   }
 
@@ -299,11 +328,11 @@ export function getResultMessage(state: GameState): string {
 
 export function generateShareText(state: GameState, isArchive: boolean = false): string {
   const { mode, currentRow, maxAttempts, isWin, dayNumber, boards } = state
- 
+
   const modeText = mode === 'termo' ? 'Termo' : mode === 'dueto' ? 'Dueto' : 'Quarteto'
   const result = isWin ? `${currentRow}/${maxAttempts}` : 'X/' + maxAttempts
   const archiveTag = isArchive ? ' (Arquivo)' : ''
- 
+
   let text = `Modo: ${modeText} - Dia: #${dayNumber}${archiveTag} - Tentativas: ${result}\n\n`
   let subtitles = `🟩 - Letra correta na posição correta\n🟨 - Letra correta na posição errada\n⬛ - Letra não existe na palavra\n🔳 - Tile não utilizado`
   text += subtitles + '\n\n'
