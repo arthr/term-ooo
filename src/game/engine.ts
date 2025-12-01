@@ -288,9 +288,9 @@ export function getResultMessage(state: GameState): string {
 
   if (state.isWin) {
     const attempts = state.currentRow
-    if (attempts <= 2) return '🥇 Fenomenal!'
-    if (attempts <= 4) return '🥈 Excelente!'
-    if (attempts <= 6) return '🥉 Bom!'
+    if (attempts <= 1) return '🥇 Fenomenal!'
+    if (attempts <= 2) return '🥈 Excelente!'
+    if (attempts <= 3) return '🥉 Bom!'
     return '🎉 Conseguiu!'
   }
 
