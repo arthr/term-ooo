@@ -25,6 +25,7 @@ import { useStatsTracker } from './hooks/useStatsTracker'
 import { useChatWebSocket } from './hooks/useChatWebSocket'
 import { CHAT_CONFIG } from './lib/chat-config'
 import { StarsBackground } from './components/animate-ui/components/backgrounds/stars'
+import { APP_VERSION } from './lib/version'
 
 function Game() {
   const navigate = useNavigate()
@@ -304,6 +305,13 @@ function Game() {
         </div>
         <StarsBackground className="fixed inset-0 z-0 max-h-dvh max-w-full opacity-30"
         pointerEvents={false} />
+        
+        {/* Version Badge */}
+        <div className="fixed bottom-2 right-2 md:left-2 z-[5] pointer-events-none">
+          <span className="text-[8px] md:text-xs text-slate-500/50 font-mono">
+            v{APP_VERSION}
+          </span>
+        </div>
       </main>
 
       <HelpDialog
