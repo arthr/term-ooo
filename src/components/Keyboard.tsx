@@ -139,7 +139,7 @@ function Key({
       disabled={disabled}
       style={getBackgroundStyle()}
       className={`
-        ${wide ? "px-3 sm:px-4 md:px-5" : "px-2 sm:px-3 md:px-4"} 
+        ${wide ? "px-4 sm:px-6 md:px-7" : "px-2 sm:px-3 md:px-4"} 
         py-2 sm:py-3.5 md:py-4
         rounded 
         transition-all duration-200
@@ -173,7 +173,7 @@ interface KeyboardProps {
 const KEYBOARD_ROWS = [
   ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
   ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'BACKSPACE'],
-  ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+  ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'ENTER'],
 ]
 
 export function Keyboard({ 
