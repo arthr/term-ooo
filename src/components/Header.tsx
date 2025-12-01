@@ -91,16 +91,18 @@ export function Header({
             {title}
           </h1>
 
-          {/* Buttons on desktop */}
+          {/* Help button (visible on all screens) */}
           <Button
             variant="ghost"
             size="icon"
             onClick={onHelp}
             aria-label="Ajuda"
-            className="text-slate-300 hover:text-white hidden md:flex"
+            className="text-slate-300 hover:text-white"
           >
             <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
+          
+          {/* Bodão easter egg */}
           <Button
             variant="ghost"
             size="icon"
@@ -108,7 +110,7 @@ export function Header({
             aria-label="Bodão! Béééééé!"
             disabled={isPlaying}
             title="Bodão"
-            className={`text-slate-300 hover:text-white hidden md:flex text-2xl ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`text-slate-300 hover:text-white md:flex text-2xl ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             🐐
           </Button>

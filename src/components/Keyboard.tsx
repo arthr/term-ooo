@@ -47,16 +47,52 @@ function Key({
     if (!states) return "";
 
     if (gameMode === "duo" && states.length === 2) {
-      // Gradiente 50/50 horizontal
-      const color1 = getStateColor(states[0]).replace(
-        "bg-",
-        "",
-      );
-      const color2 = getStateColor(states[1]).replace(
-        "bg-",
-        "",
-      );
-      return `bg-gradient-to-r from-${color1} from-50% to-${color2} to-50%`;
+      // Mapeamento estático para Tailwind JIT
+      const color1 = getStateColor(states[0]);
+      const color2 = getStateColor(states[1]);
+      
+      // Todas as combinações possíveis
+      const gradientMap: Record<string, string> = {
+        'bg-green-600_bg-green-600': 'bg-gradient-to-r from-green-600 from-50% to-green-600 to-50%',
+        'bg-green-600_bg-yellow-500': 'bg-gradient-to-r from-green-600 from-50% to-yellow-500 to-50%',
+        'bg-green-600_bg-orange-500': 'bg-gradient-to-r from-green-600 from-50% to-orange-500 to-50%',
+        'bg-green-600_bg-cyan-500': 'bg-gradient-to-r from-green-600 from-50% to-cyan-500 to-50%',
+        'bg-green-600_bg-slate-700': 'bg-gradient-to-r from-green-600 from-50% to-slate-700 to-50%',
+        'bg-green-600_bg-slate-500': 'bg-gradient-to-r from-green-600 from-50% to-slate-500 to-50%',
+        'bg-yellow-500_bg-green-600': 'bg-gradient-to-r from-yellow-500 from-50% to-green-600 to-50%',
+        'bg-yellow-500_bg-yellow-500': 'bg-gradient-to-r from-yellow-500 from-50% to-yellow-500 to-50%',
+        'bg-yellow-500_bg-orange-500': 'bg-gradient-to-r from-yellow-500 from-50% to-orange-500 to-50%',
+        'bg-yellow-500_bg-cyan-500': 'bg-gradient-to-r from-yellow-500 from-50% to-cyan-500 to-50%',
+        'bg-yellow-500_bg-slate-700': 'bg-gradient-to-r from-yellow-500 from-50% to-slate-700 to-50%',
+        'bg-yellow-500_bg-slate-500': 'bg-gradient-to-r from-yellow-500 from-50% to-slate-500 to-50%',
+        'bg-orange-500_bg-green-600': 'bg-gradient-to-r from-orange-500 from-50% to-green-600 to-50%',
+        'bg-orange-500_bg-yellow-500': 'bg-gradient-to-r from-orange-500 from-50% to-yellow-500 to-50%',
+        'bg-orange-500_bg-orange-500': 'bg-gradient-to-r from-orange-500 from-50% to-orange-500 to-50%',
+        'bg-orange-500_bg-cyan-500': 'bg-gradient-to-r from-orange-500 from-50% to-cyan-500 to-50%',
+        'bg-orange-500_bg-slate-700': 'bg-gradient-to-r from-orange-500 from-50% to-slate-700 to-50%',
+        'bg-orange-500_bg-slate-500': 'bg-gradient-to-r from-orange-500 from-50% to-slate-500 to-50%',
+        'bg-cyan-500_bg-green-600': 'bg-gradient-to-r from-cyan-500 from-50% to-green-600 to-50%',
+        'bg-cyan-500_bg-yellow-500': 'bg-gradient-to-r from-cyan-500 from-50% to-yellow-500 to-50%',
+        'bg-cyan-500_bg-orange-500': 'bg-gradient-to-r from-cyan-500 from-50% to-orange-500 to-50%',
+        'bg-cyan-500_bg-cyan-500': 'bg-gradient-to-r from-cyan-500 from-50% to-cyan-500 to-50%',
+        'bg-cyan-500_bg-slate-700': 'bg-gradient-to-r from-cyan-500 from-50% to-slate-700 to-50%',
+        'bg-cyan-500_bg-slate-500': 'bg-gradient-to-r from-cyan-500 from-50% to-slate-500 to-50%',
+        'bg-slate-700_bg-green-600': 'bg-gradient-to-r from-slate-700 from-50% to-green-600 to-50%',
+        'bg-slate-700_bg-yellow-500': 'bg-gradient-to-r from-slate-700 from-50% to-yellow-500 to-50%',
+        'bg-slate-700_bg-orange-500': 'bg-gradient-to-r from-slate-700 from-50% to-orange-500 to-50%',
+        'bg-slate-700_bg-cyan-500': 'bg-gradient-to-r from-slate-700 from-50% to-cyan-500 to-50%',
+        'bg-slate-700_bg-slate-700': 'bg-gradient-to-r from-slate-700 from-50% to-slate-700 to-50%',
+        'bg-slate-700_bg-slate-500': 'bg-gradient-to-r from-slate-700 from-50% to-slate-500 to-50%',
+        'bg-slate-500_bg-green-600': 'bg-gradient-to-r from-slate-500 from-50% to-green-600 to-50%',
+        'bg-slate-500_bg-yellow-500': 'bg-gradient-to-r from-slate-500 from-50% to-yellow-500 to-50%',
+        'bg-slate-500_bg-orange-500': 'bg-gradient-to-r from-slate-500 from-50% to-orange-500 to-50%',
+        'bg-slate-500_bg-cyan-500': 'bg-gradient-to-r from-slate-500 from-50% to-cyan-500 to-50%',
+        'bg-slate-500_bg-slate-700': 'bg-gradient-to-r from-slate-500 from-50% to-slate-700 to-50%',
+        'bg-slate-500_bg-slate-500': 'bg-gradient-to-r from-slate-500 from-50% to-slate-500 to-50%',
+      };
+      
+      const key = `${color1}_${color2}`;
+      return gradientMap[key] || color1; // Fallback para cor única
     }
 
     if (gameMode === "quadra" && states.length === 4) {

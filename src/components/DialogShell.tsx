@@ -33,8 +33,9 @@ export function DialogShell({
   maxHeight = '85vh',
   showDescription = false
 }: DialogShellProps) {
+  // Mapeamento estático para Tailwind JIT
   const maxWidthClass = maxWidth === '2xl' ? 'max-w-2xl' : 'max-w-md'
-  const maxHeightClass = maxHeight === 'none' ? '' : `max-h-[${maxHeight}]`
+  const maxHeightClass = maxHeight === '90vh' ? 'max-h-[90vh]' : maxHeight === '85vh' ? 'max-h-[85vh]' : ''
   
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
