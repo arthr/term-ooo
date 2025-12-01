@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { GameMode, Settings } from './game/types'
 import { processGuess } from './game/engine'
@@ -33,6 +33,9 @@ function Game() {
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
   const [error, setError] = useState<string>('')
   const [tabsVisible, setTabsVisible] = useState(false)
+  
+  // Controlar se já mostramos HelpDialog para este gameState
+  const helpDialogShownRef = useRef<string>('')
 
   const { mode, customDayNumber } = useGameMode({ location, navigate })
 
@@ -69,10 +72,35 @@ function Game() {
     mode,
     customDayNumber,
     animActions,
-    onCompletedGameLoad: useCallback(() => setTabsVisible(true), [])
+    onCompletedGameLoad: useCallback(() => {
+      setTabsVisible(true)
+      // Abrir StatsDialog quando carrega jogo já concluído
+      setTimeout(() => {
+        dialogManager.openDialog('stats')
+      }, 800)
+    }, [dialogManager.openDialog])
   })
 
   useStatsTracker({ gameState, mode, customDayNumber, setStats })
+
+  // Abrir HelpDialog automaticamente quando modo não foi iniciado
+  useEffect(() => {
+    if (!gameState) return
+    
+    // Criar chave única para este gameState
+    const stateKey = `${mode}-${gameState.dateKey}`
+    
+    // Só mostrar se: modo não iniciado E ainda não mostramos para este gameState
+    if (gameState.currentRow === 0 && helpDialogShownRef.current !== stateKey) {
+      const timer = setTimeout(() => {
+        dialogManager.openDialog('help')
+        // Marcar como já mostrado para este gameState
+        helpDialogShownRef.current = stateKey
+      }, 500)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [gameState?.currentRow, gameState?.dateKey, mode, dialogManager.openDialog])
 
   // Salvar configurações
   useEffect(() => {
