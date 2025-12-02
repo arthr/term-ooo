@@ -98,7 +98,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
     >
       <ResponsiveScrollArea
         desktopClassName="max-h-[calc(85vh-80px)] px-6"
-        mobileClassName="h-[calc(100dvh-10rem)] px-4"
+        mobileClassName="h-[calc(100dvh)] px-4"
       >
         <AnimatePresence>
           {open && (
