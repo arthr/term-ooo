@@ -7,14 +7,28 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+---
+
+## [0.4.0] - 2024-12-02
+
 ### Added
-- Sistema de versionamento semântico
-- Badge de versão no canto inferior da aplicação
-- Documentação completa de versionamento em `.docs/VERSIONAMENTO_SEMANTICO.md`
+- Sistema de efeitos sonoros e memes durante o jogo
+- Hook `useSoundEffects` com cache e preload inteligente
+- Toggle "Efeitos Sonoros" no SettingsDialog
+- 6 eventos de áudio configurados (vitória, derrota, compartilhar, etc)
+- Som "eu_e_vc_gostoso" na última tentativa do modo Quarteto
+- Campo `soundEnabled` em Settings (default: true)
+- Cache de HTMLAudioElement para otimização de performance
+- Preload automático de sons críticos na inicialização
 
 ---
 
 ## [0.3.0] - 2024-12-01
+
+### Added
+- Sistema de versionamento semântico
+- Badge de versão no canto inferior da aplicação
+- Documentação completa de versionamento em `.docs/VERSIONAMENTO_SEMANTICO.md`
 
 ### Added
 - Sistema de dialogs responsivos (Dialog desktop / Sheet mobile)
@@ -86,7 +100,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-[Unreleased]: https://github.com/arthr/term-ooo/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/arthr/term-ooo/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/arthr/term-ooo/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/arthr/term-ooo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/arthr/term-ooo/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/arthr/term-ooo/releases/tag/v0.1.0
