@@ -79,6 +79,19 @@ export function SettingsDialog({
                   />
                 </motion.div>
                 
+                <motion.div variants={itemVariants} className="flex items-center justify-between py-3 border-b border-gray-700">
+                  <div className="flex-1">
+                    <div className="font-semibold">Efeitos Sonoros</div>
+                    <div className="text-xs text-gray-400">
+                      Sons e memes durante o jogo
+                    </div>
+                  </div>
+                  <Switch
+                    checked={settings.soundEnabled}
+                    onCheckedChange={(checked) => onSettingsChange({ ...settings, soundEnabled: checked })}
+                  />
+                </motion.div>
+                
                 <motion.div variants={itemVariants} className="py-3 border-b border-gray-700">
                   <button
                     onClick={() => {

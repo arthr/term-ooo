@@ -16,6 +16,7 @@ export const storage = {
     return {
       highContrast: false,
       hardMode: false,
+      soundEnabled: true,
     }
   },
 

@@ -26,6 +26,7 @@ import { useChatWebSocket } from './hooks/useChatWebSocket'
 import { CHAT_CONFIG } from './lib/chat-config'
 import { StarsBackground } from './components/animate-ui/components/backgrounds/stars'
 import { APP_VERSION } from './lib/version'
+import { useSoundEffects } from './lib/sounds/useSoundEffects'
 
 function Game() {
   const navigate = useNavigate()
@@ -34,11 +35,14 @@ function Game() {
   const [settings, setSettings] = useState<Settings>(storage.getSettings())
   const [error, setError] = useState<string>('')
   const [tabsVisible, setTabsVisible] = useState(false)
-  
+
   // Controlar se já mostramos HelpDialog para este gameState
   const helpDialogShownRef = useRef<string>('')
 
   const { mode, customDayNumber } = useGameMode({ location, navigate })
+
+  // Sistema de efeitos sonoros
+  const { play: playSound } = useSoundEffects({ settings })
 
   // Gerenciamento unificado de dialogs (incluindo chat)
   const dialogManager = useDialogManager()
@@ -87,10 +91,10 @@ function Game() {
   // Abrir HelpDialog automaticamente quando modo não foi iniciado
   useEffect(() => {
     if (!gameState) return
-    
+
     // Criar chave única para este gameState
     const stateKey = `${mode}-${gameState.dateKey}`
-    
+
     // Só mostrar se: modo não iniciado E ainda não mostramos para este gameState
     if (gameState.currentRow === 0 && helpDialogShownRef.current !== stateKey) {
       const timer = setTimeout(() => {
@@ -98,7 +102,7 @@ function Game() {
         // Marcar como já mostrado para este gameState
         helpDialogShownRef.current = stateKey
       }, 500)
-      
+
       return () => clearTimeout(timer)
     }
   }, [gameState?.currentRow, gameState?.dateKey, mode, dialogManager.openDialog])
@@ -178,9 +182,14 @@ function Game() {
 
     const result = processGuess(gameState, settings)
 
+    // Detectar se está na última tentativa ANTES de processar
+    const isLastAttempt = gameState.currentRow === gameState.maxAttempts - 2
+    const isNotCompleted = !gameState.boards.every(b => b.isComplete)
+
     if (result.error) {
       setError(result.error)
       animActions.triggerShake()
+      playSound('wrongWord')
       setTimeout(() => {
         setError('')
       }, 500)
@@ -188,6 +197,11 @@ function Game() {
       // Ativar animação de flip para a linha que acabou de ser submetida
       const submittedRow = gameState.currentRow
       animActions.triggerFlip(submittedRow)
+
+      // Reproduzir som de última tentativa no quarteto se necessário
+      if (isLastAttempt && isNotCompleted && mode === 'quarteto') {
+        playSound('lastAttempt')
+      }
 
       // Detectar QUAIS boards foram completados NESTA jogada
       const newlyCompletedBoardIndices: number[] = []
@@ -208,11 +222,26 @@ function Game() {
         }, 1000) // Após o flip completar
       }
 
+      // Sons de vitória/derrota
       if (result.newState.isGameOver) {
+        setTimeout(() => {
+          if (result.newState.isWin) {
+            // Ganhou na primeira tentativa?
+            if (result.newState.currentRow === 1) {
+              playSound('firstTryWin')
+            } else {
+              playSound('win')
+            }
+          } else {
+            // Perdeu o jogo
+            playSound('gameOver')
+          }
+        }, 1200)
+
         setTimeout(() => dialogManager.dialogs.stats.onOpen(), newlyCompletedBoardIndices.length > 0 ? 2200 : 1200)
       }
     }
-  }, [gameState, settings, mode, animActions, dialogManager])
+  }, [gameState, settings, mode, animActions, dialogManager, playSound])
 
   // Hook de keyboard input
   const { handleKey } = useKeyboardInput({
@@ -304,8 +333,8 @@ function Game() {
           />
         </div>
         <StarsBackground className="fixed inset-0 z-0 max-h-dvh max-w-full opacity-30"
-        pointerEvents={false} />
-        
+          pointerEvents={false} />
+
         {/* Version Badge */}
         <div className="fixed bottom-2 right-2 md:left-2 z-[5] pointer-events-none">
           <span className="text-[8px] md:text-xs text-slate-500/50 font-mono">
@@ -332,6 +361,7 @@ function Game() {
         }}
         stats={stats}
         gameState={gameState}
+        onShare={() => playSound('share')}
       />
 
       <SettingsDialog

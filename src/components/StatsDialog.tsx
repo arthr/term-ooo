@@ -16,9 +16,10 @@ interface StatsDialogProps {
   onOpenChange: (open: boolean) => void
   stats: Stats | null
   gameState: GameState
+  onShare?: () => void
 }
 
-export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialogProps) {
+export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: StatsDialogProps) {
   const [copied, setCopiedTemporary] = useTemporaryState()
 
   // Renderer customizado para o countdown
@@ -50,6 +51,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState }: StatsDialo
     try {
       await navigator.clipboard.writeText(text)
       setCopiedTemporary(2000)
+      onShare?.() // Tocar som de compartilhamento
     } catch (err) {
       console.error('Erro ao copiar:', err)
     }

@@ -37,6 +37,7 @@ export interface GameState {
 export interface Settings {
   highContrast: boolean
   hardMode: boolean
+  soundEnabled: boolean
 }
 
 export interface Stats {
