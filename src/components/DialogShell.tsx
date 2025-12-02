@@ -16,7 +16,7 @@ interface DialogShellProps {
   borderColor: string
   titleGradientClassName: string
   children: ReactNode
-  maxWidth?: 'md' | '2xl'
+  maxWidth?: 'md' | '2xl' | 'full'
   maxHeight?: '85vh' | '90vh' | 'none'
   showDescription?: boolean
 }
@@ -36,7 +36,7 @@ export function DialogShell({
   // Mapeamento estático para Tailwind JIT
   const maxWidthClass = maxWidth === '2xl' ? 'max-w-2xl' : 'max-w-md'
   const maxHeightClass = maxHeight === '90vh' ? 'max-h-[90vh]' : maxHeight === '85vh' ? 'max-h-[85vh]' : ''
-  
+
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent
@@ -45,21 +45,26 @@ export function DialogShell({
           maxHeightClass,
           'bg-gradient-to-b from-gray-900 to-gray-800 text-white border-2 p-0'
         )}
-        mobileClassName="max-w-full bg-gradient-to-b from-gray-900 to-gray-800 text-white border-l-2 p-0"
+        mobileClassName={
+          cn(
+            maxWidth === 'full' ? 'w-full' : '',
+            'bg-gradient-to-b from-gray-900 to-gray-800 text-white border-l-2 p-0'
+          )
+        }
         className={borderColor}
       >
-        <ResponsiveDialogHeader 
+        <ResponsiveDialogHeader
           desktopClassName="px-6 pt-6 pb-2"
           mobileClassName="px-4 pt-6 pb-2 flex-shrink-0"
         >
-          <ResponsiveDialogTitle 
+          <ResponsiveDialogTitle
             desktopClassName="text-2xl"
             mobileClassName="text-xl"
             className={cn('font-bold text-center bg-clip-text text-transparent', titleGradientClassName)}
           >
             {title}
           </ResponsiveDialogTitle>
-          <ResponsiveDialogDescription 
+          <ResponsiveDialogDescription
             desktopClassName={showDescription ? "" : "sr-only"}
             mobileClassName={showDescription ? "text-center text-gray-400 text-xs pt-2" : "sr-only"}
           >

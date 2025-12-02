@@ -1,8 +1,31 @@
 # Term.ooo Clone
 
+[![Version](https://img.shields.io/badge/version-0.4.1-blue.svg)](https://github.com/arthr/term-ooo/releases/tag/v0.4.1)
+[![License](https://img.shields.io/badge/license-Educational-green.svg)](LICENSE)
+[![Deploy](https://github.com/arthr/term-ooo/actions/workflows/deploy.yml/badge.svg)](https://github.com/arthr/term-ooo/actions)
+
 Clone completo e funcional do jogo [Term.ooo](https://term.ooo), desenvolvido com React, TypeScript e Tailwind CSS.
 
 🌐 **[Jogue agora no GitHub Pages!](https://arthr.github.io/term-ooo/)** 🎮
+
+---
+
+## 📋 Índice
+
+- [Sobre o Jogo](#-sobre-o-jogo)
+- [Features Implementadas](#-features-implementadas)
+- [Sistema de Chat em Tempo Real](#-sistema-de-chat-em-tempo-real)
+- [Sistema de Efeitos Sonoros](#-sistema-de-efeitos-sonoros)
+- [Dialogs Responsivos](#-dialogs-responsivos)
+- [Hooks Customizados](#-hooks-customizados)
+- [Início Rápido](#-início-rápido)
+- [Deploy Automático](#-deploy-automático-github-actions)
+- [Stack Tecnológico](#️-stack-tecnológico)
+- [Arquitetura do Projeto](#-arquitetura-do-projeto)
+- [Versionamento](#-versionamento)
+- [A História Por Trás Deste Clone](#-a-história-por-trás-deste-clone)
+
+---
 
 ## 🎮 Sobre o Jogo
 
@@ -16,6 +39,8 @@ Cada palpite revela dicas sobre as letras:
 - 🟨 **Amarelo**: Letra correta na posição errada
 - ⬛ **Cinza**: Letra não existe na palavra
 - 🔳 **Branco**: Tile não utilizado
+
+---
 
 ## ✨ Features Implementadas
 
@@ -55,16 +80,21 @@ Cada palpite revela dicas sobre as letras:
   - Streak atual e melhor
   - Separadas por modo de jogo
 
-- **Recursos adicionais:**
-  - 📅 **Arquivo de Dias Anteriores** (últimos 30 dias)
-  - ⏱️ Countdown visual para próxima palavra
-  - 🎨 Modo de alto contraste (acessibilidade)
-  - 📤 Compartilhar resultados (grid de emojis)
-  - 📱 Interface responsiva (mobile-first)
-  - 💡 Solutions reveladas ao finalizar
-  - 🔽 Toggle TopTabs (economiza espaço na tela)
-  - ℹ️ AboutDialog com história épica e animações
-  - 🐐 Botão Bodão com áudio (Béééééé!)
+### 📱 Recursos Adicionais
+- 💬 **Chat em tempo real** com WebSocket
+- 🎵 **Efeitos sonoros e memes** durante o jogo
+- 📱 **Interface 100% responsiva** (Dialog desktop / Sheet mobile)
+- 📅 **Arquivo de Dias Anteriores** (últimos 30 dias)
+- ⏱️ Countdown visual para próxima palavra
+- 🎨 Modo de alto contraste (acessibilidade)
+- 📤 Compartilhar resultados (grid de emojis)
+- 💡 Solutions reveladas ao finalizar
+- 🔽 Toggle TopTabs (economiza espaço na tela)
+- ℹ️ AboutDialog com história épica e animações
+- 🐐 Botão Bodão com áudio (Béééééé!)
+- ⭐ Fundo animado com estrelas
+- 🏷️ Versionamento semântico visível na UI
+- 🔔 Notificações de novas mensagens
 
 ### 🎮 Dev Mode (Easter Egg)
 Pressione o Konami Code: `↑ ↑ ↓ ↓ ← → ← → B A`
@@ -76,6 +106,149 @@ Pressione o Konami Code: `↑ ↑ ↓ ↓ ← → ← → B A`
 - 🗑️ Limpar localStorage (com confirmação dupla)
 
 Dica: abra as Configurações para lembrar o código! 😉
+
+---
+
+## 💬 Sistema de Chat em Tempo Real
+
+Chat multiplayer integrado ao jogo usando WebSocket!
+
+### Features do Chat
+- 🔌 **WebSocket em tempo real** - Mensagens instantâneas
+- 👤 **Sistema de autenticação** - Escolha seu nickname
+- 👥 **Indicador de usuários online** - Veja quem está jogando
+- 🔔 **Notificações de novas mensagens** - Badge com contador
+- ✨ **Animações de partículas** - IconButton do shadcn.io
+- 💾 **Persistência de nickname** - Salvo no localStorage
+- 📱 **100% responsivo** - Painel flutuante adaptativo
+
+### Componentes do Chat
+- `ChatButton` - Botão flutuante com animações e badge
+- `ChatPanel` - Painel principal responsivo
+- `ChatMessageList` - Lista de mensagens com scroll automático
+- `ChatMessageItem` - Item individual de mensagem
+- `ChatMessageInput` - Input de mensagem customizado
+- `ChatNicknameForm` - Formulário de escolha de nickname
+
+### Hooks Relacionados
+- `useChatWebSocket` - Hook principal do WebSocket
+- `useChatAuth` - Gerenciamento de autenticação
+- `useChatConnection` - Status e reconexão automática
+- `useChatMessages` - Mensagens e contador de não lidas
+
+**Configuração:** `src/lib/chat-config.ts`
+
+---
+
+## 🎵 Sistema de Efeitos Sonoros
+
+Sistema de áudio com memes que tocam em momentos específicos do jogo!
+
+### Eventos de Som Implementados
+
+| Evento | Momento | Arquivo | Status |
+|--------|---------|---------|--------|
+| `waiting` | Após 15s de inatividade no primeiro chute | `os_cara_no_teto.mp3` | ✅ |
+| `lastAttempt` | Última tentativa do modo Quarteto | `eu_e_vc_gostoso.mp3` | ✅ |
+| `share` | Ao compartilhar resultado | - | 🔜 |
+| `gameOver` | Ao perder o jogo | - | 🔜 |
+| `firstTryWin` | Vitória na primeira tentativa | - | 🔜 |
+| `win` | Vitória (geral) | - | 🔜 |
+| `wrongWord` | Palavra inválida | - | 🔜 |
+
+### Features de Áudio
+- 🎵 **Hook `useSoundEffects`** - Sistema principal
+- 📦 **Cache de HTMLAudioElement** - Performance otimizada
+- ⚡ **Preload inteligente** - Sons críticos carregados na inicialização
+- 🎚️ **Controle de volume** - Volume configurável por evento
+- ⏱️ **Timer de inatividade** - Som após 15s sem jogar
+- 🔇 **Toggle global** - Ativar/desativar no SettingsDialog
+- 💾 **Persistência** - Preferência salva no localStorage
+
+**Arquitetura:**
+```
+src/lib/sounds/
+├── types.ts           # Tipos TypeScript
+├── config.ts          # Mapeamento eventos → arquivos
+└── useSoundEffects.ts # Hook principal
+```
+
+---
+
+## 📱 Dialogs Responsivos
+
+Sistema unificado de dialogs que se adaptam ao dispositivo!
+
+### Como Funciona
+- 🖥️ **Desktop**: Dialog modal centralizado
+- 📱 **Mobile**: Sheet (drawer) da direita, 100% altura
+- 🔄 **Automático**: Detecta breakpoint `md` (768px)
+- 🎨 **Props separadas**: `desktopClassName` e `mobileClassName`
+- 📜 **Scroll inteligente**: `ResponsiveScrollArea` contextual
+
+### Componentes Responsivos
+- `ResponsiveDialog` - Container principal
+- `ResponsiveDialogContent` - Conteúdo adaptativo
+- `ResponsiveDialogHeader` - Cabeçalho responsivo
+- `ResponsiveDialogTitle` - Título responsivo
+- `ResponsiveDialogDescription` - Descrição responsiva
+- `ResponsiveScrollArea` - Área de scroll contextual
+- `DialogShell` - Base reutilizável para todos os dialogs
+
+### Dialogs Implementados
+Todos os 6 dialogs do jogo usam o sistema responsivo:
+- `HelpDialog` - Como jogar
+- `StatsDialog` - Estatísticas
+- `SettingsDialog` - Configurações
+- `AboutDialog` - História do projeto
+- `DevModeDialog` - Ferramentas de desenvolvedor
+- `ArchiveDialog` - Dias anteriores
+
+### Features
+- ✅ Abertura automática do `HelpDialog` em modos não iniciados
+- ✅ Abertura automática do `StatsDialog` em jogos concluídos
+- ✅ Gerenciamento centralizado com `useDialogManager`
+- ✅ Animações com Framer Motion
+- ✅ Fechamento com tecla ESC
+- ✅ Lock de scroll quando aberto
+
+---
+
+## 🎣 Hooks Customizados
+
+15 hooks customizados para arquitetura clean e reutilizável!
+
+### Hooks de Chat (4)
+| Hook | Responsabilidade |
+|------|------------------|
+| `useChatWebSocket` | WebSocket principal e orquestração |
+| `useChatAuth` | Autenticação e gestão de nickname |
+| `useChatConnection` | Gerenciamento de conexão e reconexão |
+| `useChatMessages` | Mensagens e contador de não lidas |
+
+### Hooks de UI (7)
+| Hook | Responsabilidade |
+|------|------------------|
+| `useDialogManager` | Gerenciamento centralizado de dialogs |
+| `useDialogAnimations` | Animações de dialogs (Framer Motion) |
+| `useBodyScrollLock` | Lock de scroll quando modal aberto |
+| `useEscapeKey` | Fechar dialogs com tecla ESC |
+| `useMediaQuery` | Detecção de breakpoints (mobile/desktop) |
+| `useTemporaryState` | Estados temporários (ex: "Copiado!") |
+| `useSoundEffects` | Sistema de efeitos sonoros |
+
+### Hooks de Jogo (4)
+| Hook | Responsabilidade |
+|------|------------------|
+| `useGameMode` | Gerenciamento de modo de jogo (Termo/Dueto/Quarteto) |
+| `useGameAnimations` | Todas as animações do jogo (flip, shake, happy) |
+| `useKeyboardInput` | Input de teclado físico e virtual |
+| `usePersistentGameState` | Persistência de estado no localStorage |
+| `useStatsTracker` | Rastreamento e atualização de estatísticas |
+
+**Localização:** `src/hooks/`
+
+---
 
 ## 🚀 Início Rápido
 
@@ -95,6 +268,8 @@ pnpm run preview
 # Lint do código
 pnpm run lint
 ```
+
+---
 
 ## 🚀 Deploy Automático (GitHub Actions)
 
@@ -139,27 +314,7 @@ base: command === 'build' ? '/term-ooo/' : '/'
 - **Desenvolvimento local:** `base: '/'` (porta 5175)
 - **GitHub Pages:** `base: '/term-ooo/'` (subpath no domínio)
 
-### ✅ Verificar Status do Deploy
-
-Após fazer push:
-
-1. Acesse: https://github.com/arthr/term-ooo/actions
-2. Clique no commit mais recente
-3. Aguarde o ✅ verde (ou ❌ se houver erro)
-4. Teste no ar: https://arthr.github.io/term-ooo/
-
-### 🔧 Executar Deploy Manualmente
-
-```bash
-# 1. Build local
-pnpm run build
-
-# 2. Preview do build
-pnpm run preview
-
-# 3. Push para main (deploy automático)
-git push origin main
-```
+---
 
 ## 🛠️ Stack Tecnológico
 
@@ -176,6 +331,11 @@ git push origin main
 - **Lucide React** - Ícones SVG modernos
 - **class-variance-authority** - Variantes de componentes
 - **tailwind-merge** - Merge de classes CSS
+- **Animate UI** - Componentes animados (StarsBackground)
+
+### Real-time & Audio
+- **Socket.IO Client** - WebSocket para chat em tempo real
+- **HTMLAudioElement API** - Sistema de efeitos sonoros
 
 ### Ferramentas Dev
 - **ESLint 9** - Linting (flat config)
@@ -184,7 +344,10 @@ git push origin main
 
 ### Libs Auxiliares
 - **react-countdown** - Countdown visual
+- **react-day-picker** - Calendário do ArchiveDialog
 - **clsx** - Utilitário de classes condicionais
+
+---
 
 ## 📁 Arquitetura do Projeto
 
@@ -192,8 +355,11 @@ git push origin main
 term-ooo/
 ├── public/                      # Assets estáticos
 │   └── assets/
-│       └── mp3/
-│           └── bodao.mp3       # Áudio do Bodão
+│       ├── mp3/
+│       │   └── bodao.mp3       # Áudio do Bodão
+│       └── sounds/             # 🆕 Efeitos sonoros e memes
+│           ├── eu_e_vc_gostoso.mp3
+│           └── os_cara_no_teto.mp3
 ├── database/                    # Arquivos de referência
 │   └── term.ooo.js             # Código original (para estudo)
 ├── .github/
@@ -201,39 +367,85 @@ term-ooo/
 │       └── deploy.yml          # GitHub Actions CI/CD
 ├── src/
 │   ├── components/             # Componentes React
+│   │   ├── Chat/              # 🆕 Sistema de chat (6 componentes)
+│   │   │   ├── ChatButton.tsx
+│   │   │   ├── ChatPanel.tsx
+│   │   │   ├── ChatMessageList.tsx
+│   │   │   ├── ChatMessageItem.tsx
+│   │   │   ├── ChatMessageInput.tsx
+│   │   │   └── ChatNicknameForm.tsx
+│   │   ├── animate-ui/        # 🆕 Componentes animados
+│   │   │   └── components/
+│   │   │       └── backgrounds/
+│   │   │           └── stars.tsx
 │   │   ├── ui/                # shadcn/ui base components
 │   │   │   ├── button.tsx
-│   │   │   ├── calendar.tsx   # Calendar (react-day-picker)
+│   │   │   ├── calendar.tsx
 │   │   │   ├── dialog.tsx
 │   │   │   ├── scroll-area.tsx
+│   │   │   ├── sheet.tsx      # 🆕 Drawer mobile
 │   │   │   ├── switch.tsx
-│   │   │   └── tabs.tsx
-│   │   ├── AboutDialog.tsx    # Dialog com história épica
-│   │   ├── ArchiveDialog.tsx  # Dialog de dias anteriores (Time Machine)
-│   │   ├── DevModeDialog.tsx  # Dialog de ferramentas dev
-│   │   ├── GameBoard.tsx      # Board individual (grid 6x5)
-│   │   ├── GameLayout.tsx     # Layout responsivo dos boards
-│   │   ├── Header.tsx         # Cabeçalho com botões e áudio
-│   │   ├── HelpDialog.tsx     # Dialog de instruções
-│   │   ├── Keyboard.tsx       # Teclado virtual com gradientes
-│   │   ├── SettingsDialog.tsx # Dialog de configurações
-│   │   ├── StatsDialog.tsx    # Dialog de estatísticas
-│   │   ├── Tile.tsx           # Tile individual (letra)
-│   │   └── TopTabs.tsx        # Tabs com toggle animado
+│   │   │   ├── tabs.tsx
+│   │   │   ├── textarea.tsx
+│   │   │   ├── responsive-dialog.tsx # 🆕 Dialog responsivo
+│   │   │   ├── responsive-scroll-area.tsx
+│   │   │   ├── message-input.tsx
+│   │   │   ├── glowing-effect.tsx
+│   │   │   └── shadcn-io/     # 🆕 IconButton com partículas
+│   │   │       └── icon-button/
+│   │   ├── AboutDialog.tsx
+│   │   ├── ArchiveDialog.tsx
+│   │   ├── DevModeDialog.tsx
+│   │   ├── DialogShell.tsx    # 🆕 Base reutilizável de dialogs
+│   │   ├── GameBoard.tsx
+│   │   ├── GameLayout.tsx
+│   │   ├── Header.tsx
+│   │   ├── HelpDialog.tsx
+│   │   ├── Keyboard.tsx
+│   │   ├── SettingsDialog.tsx
+│   │   ├── StatsDialog.tsx
+│   │   ├── Tile.tsx
+│   │   └── TopTabs.tsx
+│   ├── hooks/                 # 🆕 15 hooks customizados
+│   │   ├── useChatWebSocket.ts
+│   │   ├── useChatAuth.ts
+│   │   ├── useChatConnection.ts
+│   │   ├── useChatMessages.ts
+│   │   ├── useDialogManager.ts
+│   │   ├── useDialogAnimations.ts
+│   │   ├── useBodyScrollLock.ts
+│   │   ├── useEscapeKey.ts
+│   │   ├── useMediaQuery.ts
+│   │   ├── useTemporaryState.ts
+│   │   ├── useGameMode.ts
+│   │   ├── useGameAnimations.ts
+│   │   ├── useKeyboardInput.ts
+│   │   ├── usePersistentGameState.ts
+│   │   └── useStatsTracker.ts
 │   ├── game/                  # Lógica do jogo
 │   │   ├── engine.ts          # Motor do jogo (avaliação, validação)
 │   │   ├── storage.ts         # Interface com localStorage
 │   │   ├── types.ts           # TypeScript interfaces e types
+│   │   ├── chat-types.ts      # 🆕 Tipos do chat
 │   │   ├── words-termo.ts     # Dicionário Termo (1 palavra)
 │   │   ├── words-dueto.ts     # Dicionário Dueto (2 palavras)
 │   │   └── words-quarteto.ts  # Dicionário Quarteto (4 palavras)
 │   ├── lib/                   # Utilitários gerais
-│   │   ├── dates.ts           # NOVO: Módulo central de datas
-│   │   └── utils.ts           # Funções auxiliares (cn, normalize)
+│   │   ├── sounds/            # 🆕 Sistema de áudio
+│   │   │   ├── types.ts       # Tipos de eventos de som
+│   │   │   ├── config.ts      # Mapeamento eventos → arquivos
+│   │   │   └── useSoundEffects.ts # Hook principal
+│   │   ├── chat-config.ts     # 🆕 Configuração do chat
+│   │   ├── chat-utils.ts      # 🆕 Utilitários do chat
+│   │   ├── dates.ts           # Módulo central de datas
+│   │   ├── utils.ts           # Funções auxiliares (cn, normalize)
+│   │   ├── version.ts         # 🆕 Controle de versão
+│   │   └── z-index.ts         # 🆕 Gerenciamento de z-index
 │   ├── App.tsx                # Componente principal (state manager)
 │   ├── main.tsx               # Entry point da aplicação
 │   ├── index.css              # Estilos globais + animações
 │   └── vite-env.d.ts          # Types do Vite
+├── CHANGELOG.md               # 🆕 Histórico de mudanças
 ├── eslint.config.js           # ESLint 9 (flat config)
 ├── tailwind.config.cjs        # Configuração Tailwind
 ├── postcss.config.cjs         # Configuração PostCSS
@@ -247,6 +459,8 @@ term-ooo/
 ├── ROADMAP_FEATURES.md        # Features futuras planejadas
 └── README.md                  # Este arquivo
 ```
+
+---
 
 ## 🎯 Mecânicas Implementadas
 
@@ -273,6 +487,8 @@ term-ooo/
 - Space pula para próxima vazia
 - Cursor visual com borda inferior
 
+---
+
 ## 🎨 Sistema de Animações
 
 ### Animações de Tiles (CSS extraídas do original)
@@ -293,6 +509,34 @@ term-ooo/
 | **ChevronDown** | Rotate 180° | Gira ao abrir/fechar TopTabs |
 | **Redes Sociais** | Scale + Rotate | Hover com bounce e rotação |
 | **Ícones** | Spring physics | Entrada com física realista |
+| **Chat Button** | Particles + Glow | Partículas e brilho em novas mensagens |
+
+---
+
+## 📦 Versionamento
+
+Este projeto segue o [Semantic Versioning](https://semver.org/lang/pt-BR/) (SemVer):
+
+**Formato:** `MAJOR.MINOR.PATCH` (ex: `0.4.1`)
+
+- **MAJOR**: Mudanças incompatíveis na API
+- **MINOR**: Novas funcionalidades (compatíveis)
+- **PATCH**: Correções de bugs
+
+### Versão Atual: **v0.4.1**
+
+**Histórico de Releases:**
+- **v0.4.1** (2024-12-02) - Som de inatividade + Fix settings
+- **v0.4.0** (2024-12-02) - Sistema de efeitos sonoros
+- **v0.3.0** (2024-12-01) - Dialogs responsivos + Versionamento
+- **v0.2.0** (2024-11-30) - Chat WebSocket + Arquivo
+- **v0.1.0** (2024-11-15) - Implementação inicial
+
+**Documentação completa:** [CHANGELOG.md](CHANGELOG.md)
+
+**Badge de versão:** Visível no canto inferior da aplicação
+
+---
 
 ## 🗺️ Features Futuras
 
@@ -303,9 +547,13 @@ Veja o [ROADMAP_FEATURES.md](ROADMAP_FEATURES.md) para lista completa de feature
 2. 🖼️ Compartilhamento como imagem
 3. 📊 Estatísticas avançadas com gráficos
 
+---
+
 ## 🤝 Contribuindo
 
 Este é um projeto educativo. Sugestões e melhorias são bem-vindas!
+
+---
 
 ## 📜 Créditos e Referências
 
@@ -321,6 +569,8 @@ Este é um projeto educativo. Sugestões e melhorias são bem-vindas!
 Este clone foi desenvolvido exclusivamente para **fins educacionais** e de aprendizado, sem objetivos comerciais.
 
 As palavras, mecânicas e animações foram estudadas e replicadas do jogo original com respeito e admiração pelo trabalho do Fernando Serboncini.
+
+---
 
 ## 📄 Licença
 
@@ -347,6 +597,14 @@ _O que deveria ser apenas "dar uma olhada rápida" no código, virou uma jornada
 
 _Quando o sol nasceu, lá estava: um clone funcional com **98% de fidelidade ao original**, todas as animações 3D extraídas pixel-perfect, e até features bônus que o original não tem._
 
+### 🚀 E Não Parou Por Aí...
+
+Após o lançamento inicial, o projeto continuou evoluindo:
+- 💬 **Chat em tempo real** para jogar com amigos
+- 🎵 **Sistema de memes sonoros** para momentos épicos
+- 📱 **Interface 100% responsiva** para mobile
+- 🏷️ **Versionamento profissional** com SemVer
+
 ### 🐐 Agradecimentos Especiais
 
 Um salve pro **Pedro Orochi (Orochinho)**, o bodão mor do Termo, que sem saber foi a centelha de inspiração para este projeto. Se você também é um fã que assiste lives/vídeos do Orochinho enquanto coda, você entende. 🎮✨
@@ -361,6 +619,8 @@ _Red Bull realmente te dá asas... asas para:_
 - 🎨 Replicar animações 3D complexas
 - 🐐 Homenagear o bodão do Termo (Orochinho)
 - 🚀 E criar um clone completo enquanto assiste live
+- 💬 Adicionar chat multiplayer porque dá pra jogar com os amigos
+- 🎵 Colocar memes sonoros porque diversão é importante
 
 **Béééééé! 🐐**
 
@@ -379,4 +639,3 @@ _Enquanto assistia o Orochinho mandando ver no Termo_
 - 💼 LinkedIn: [@arthrmrs](https://linkedin.com/in/arthrmrs)
 - 📸 Instagram: [@arthrmrs](https://instagram.com/arthrmrs)
 - 🐦 X (Twitter): [@arthrmrs](https://x.com/arthrmrs)
-

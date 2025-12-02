@@ -58,6 +58,7 @@ export function ArchiveDialog({ open, onOpenChange, currentMode }: ArchiveDialog
             borderColor="border-orange-600"
             titleGradientClassName="bg-gradient-to-r from-orange-400 to-yellow-500"
             showDescription={true}
+            maxWidth='full'
         >
             <ResponsiveScrollArea 
                 desktopClassName="px-6 pb-6"
