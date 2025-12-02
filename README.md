@@ -373,7 +373,7 @@ _Enquanto assistia o Orochinho mandando ver no Termo_
 
 ## 👤 Desenvolvedor
 
-**Arthur Marques** (@arthr)
+**Arthur Morais** (@arthr)
 
 - 🐙 GitHub: [@arthr](https://github.com/arthr)
 - 💼 LinkedIn: [@arthrmrs](https://linkedin.com/in/arthrmrs)
