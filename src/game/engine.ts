@@ -1,4 +1,5 @@
 // src/game/engine.ts
+
 import { normalizeString } from '@/lib/utils'
 import {
   getDayNumber as getDayNumberFromDates,
@@ -6,42 +7,22 @@ import {
   getDayNumberFromDate as getDayNumberFromDateDates
 } from '@/lib/dates'
 import { GameMode, GameState, Board, Guess, Tile, KeyState, Settings } from './types'
-import { termoSolutions, termoAllowed, accentMap } from './words-termo'
-import { duetoSolutions, duetoAllowed } from './words-dueto'
-import { quartetoSolutions, quartetoAllowed } from './words-quarteto'
+import { accentMap } from './words-termo'
+import {
+  getWordsForMode,
+  getMaxAttempts,
+  getNumBoards,
+  getMinAttempts,
+  getModeDisplayName,
+} from './mode-config'
+import {
+  SHARE_LEGEND,
+  renderBoardPair,
+  renderSingleBoard,
+} from './share-utils'
 
-function getWordsForMode(mode: GameMode) {
-  switch (mode) {
-    case 'termo':
-      return { solutions: termoSolutions, allowed: termoAllowed }
-    case 'dueto':
-      return { solutions: duetoSolutions, allowed: duetoAllowed }
-    case 'quarteto':
-      return { solutions: quartetoSolutions, allowed: quartetoAllowed }
-  }
-}
-
-function getMaxAttempts(mode: GameMode): number {
-  switch (mode) {
-    case 'termo':
-      return 6
-    case 'dueto':
-      return 7
-    case 'quarteto':
-      return 9
-  }
-}
-
-function getNumBoards(mode: GameMode): number {
-  switch (mode) {
-    case 'termo':
-      return 1
-    case 'dueto':
-      return 2
-    case 'quarteto':
-      return 4
-  }
-}
+// Re-exportar funções do mode-config para manter compatibilidade
+export { getMaxAttempts, getNumBoards, getMinAttempts, getModeDisplayName } from './mode-config'
 
 export function getDailyWords(mode: GameMode, dayNumber: number): string[] {
   const { solutions } = getWordsForMode(mode)
@@ -286,40 +267,13 @@ export function processGuess(
 export function getResultMessage(state: GameState): string {
   if (!state.isGameOver) return ''
 
-  const minAttemps = () => {
-    switch (state.mode) {
-      case 'termo':
-        return {
-          first: 1,
-          second: 2,
-          third: 3,
-        }
-      case 'dueto':
-        return {
-          first: 2,
-          second: 3,
-          third: 4,
-        }
-      case 'quarteto':
-        return {
-          first: 4,
-          second: 5,
-          third: 6,
-        }
-      default:
-        return {
-          first: 1,
-          second: 2,
-          third: 3,
-        }
-    }
-  }
+  const minAttempts = getMinAttempts(state.mode)
 
   if (state.isWin) {
     const attempts = state.currentRow
-    if (attempts <= minAttemps().first) return '🥇 Fenomenal!'
-    if (attempts <= minAttemps().second) return '🥈 Excelente!'
-    if (attempts <= minAttemps().third) return '🥉 Bom!'
+    if (attempts <= minAttempts.first) return '🥇 Fenomenal!'
+    if (attempts <= minAttempts.second) return '🥈 Excelente!'
+    if (attempts <= minAttempts.third) return '🥉 Bom!'
     return '🎉 Conseguiu!'
   }
 
@@ -329,108 +283,28 @@ export function getResultMessage(state: GameState): string {
 export function generateShareText(state: GameState, isArchive: boolean = false): string {
   const { mode, currentRow, maxAttempts, isWin, dayNumber, boards } = state
 
-  const modeText = mode === 'termo' ? 'Termo' : mode === 'dueto' ? 'Dueto' : 'Quarteto'
+  const modeText = getModeDisplayName(mode)
   const result = isWin ? `${currentRow}/${maxAttempts}` : 'X/' + maxAttempts
   const archiveTag = isArchive ? ' (Arquivo)' : ''
 
-  let text = `Modo: ${modeText} - Dia: #${dayNumber}${archiveTag} - Tentativas: ${result}\n\n`
-  let subtitles = `🟩 - Letra correta na posição correta\n🟨 - Letra correta na posição errada\n⬛ - Letra não existe na palavra\n🔳 - Tile não utilizado`
-  text += subtitles + '\n\n'
+  let text = `Jogo.Work - Dia #${dayNumber}${archiveTag}\n\n`
+  text += `Modo: ${modeText} - Tentativas: ${result}\n\n`
+  text += SHARE_LEGEND + '\n\n'
 
   if (mode === 'termo') {
     // Uma coluna
-    for (const guess of boards[0].guesses) {
-      for (const tile of guess.tiles) {
-        text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-      }
-      text += '\n'
-    }
+    text += renderSingleBoard(boards[0], maxAttempts)
   } else if (mode === 'dueto') {
     // Duas colunas lado a lado
-    const maxRows = Math.max(boards[0].guesses.length, boards[1].guesses.length)
-    for (let i = 0; i < maxRows; i++) {
-      const guess0 = boards[0].guesses[i]
-      const guess1 = boards[1].guesses[i]
-
-      if (guess0) {
-        for (const tile of guess0.tiles) {
-          text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-        }
-      } else {
-        text += '🔳🔳🔳🔳🔳'
-      }
-
-      text += ' '
-
-      if (guess1) {
-        for (const tile of guess1.tiles) {
-          text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-        }
-      } else {
-        text += '🔳🔳🔳🔳🔳'
-      }
-
-      text += '\n'
-    }
+    text += renderBoardPair(boards, 0, 1, maxAttempts)
   } else {
     // Quarteto: 2x2
-    const maxRows = Math.max(...boards.map(b => b.guesses.length))
-
-    for (let i = 0; i < maxRows; i++) {
-      // Linha superior (tabuleiros 0 e 1)
-      const guess0 = boards[0].guesses[i]
-      const guess1 = boards[1].guesses[i]
-
-      if (guess0) {
-        for (const tile of guess0.tiles) {
-          text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-        }
-      } else {
-        text += '🔳🔳🔳🔳🔳'
-      }
-
-      text += ' '
-
-      if (guess1) {
-        for (const tile of guess1.tiles) {
-          text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-        }
-      } else {
-        text += '🔳🔳🔳🔳🔳'
-      }
-
-      text += '\n'
-    }
-
+    // Linha superior (tabuleiros 0 e 1)
+    text += renderBoardPair(boards, 0, 1, maxAttempts)
     text += '\n'
-
-    for (let i = 0; i < maxRows; i++) {
-      // Linha inferior (tabuleiros 2 e 3)
-      const guess2 = boards[2].guesses[i]
-      const guess3 = boards[3].guesses[i]
-
-      if (guess2) {
-        for (const tile of guess2.tiles) {
-          text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-        }
-      } else {
-        text += '🔳🔳🔳🔳🔳'
-      }
-
-      text += ' '
-
-      if (guess3) {
-        for (const tile of guess3.tiles) {
-          text += tile.state === 'correct' ? '🟩' : tile.state === 'present' ? '🟨' : '⬛'
-        }
-      } else {
-        text += '🔳🔳🔳🔳🔳'
-      }
-
-      text += '\n'
-    }
+    // Linha inferior (tabuleiros 2 e 3)
+    text += renderBoardPair(boards, 2, 3, maxAttempts)
   }
 
   return text
 }
-

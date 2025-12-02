@@ -1,15 +1,18 @@
 // src/components/StatsDialog.tsx
 import { motion, AnimatePresence } from 'framer-motion'
+import { useRef } from 'react'
 import Countdown from 'react-countdown'
-import { Button } from './ui/button'
 import { Stats, GameState } from '@/game/types'
-import { getResultMessage, generateShareText } from '@/game/engine'
-import { Share2, Check } from 'lucide-react'
+import { getResultMessage, generateShareText, getMinAttempts } from '@/game/engine'
 import { useDialogAnimations } from '@/hooks/useDialogAnimations'
 import { useTemporaryState } from '@/hooks/useTemporaryState'
+import { useShareImage } from '@/hooks/useShareImage'
 import { getNextMidnightTimestamp } from '@/lib/dates'
 import { DialogShell } from './DialogShell'
 import { ResponsiveScrollArea } from './ui/responsive-scroll-area'
+import { ShareDropdown } from './ShareDropdown'
+import { ShareCard } from './ShareCard'
+import { SHARE_CONFIG } from '@/lib/share-config'
 
 interface StatsDialogProps {
   open: boolean
@@ -21,6 +24,8 @@ interface StatsDialogProps {
 
 export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: StatsDialogProps) {
   const [copied, setCopiedTemporary] = useTemporaryState()
+  const shareCardRef = useRef<HTMLDivElement>(null)
+  const { shareAsImage, loading: sharingImage } = useShareImage()
 
   // Renderer customizado para o countdown
   const countdownRenderer = ({ hours, minutes, seconds }: { hours: number; minutes: number; seconds: number }) => {
@@ -43,7 +48,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
     ? Math.round((safeStats.gamesWon / safeStats.gamesPlayed) * 100)
     : 0
 
-  const handleShare = async () => {
+  const handleShareText = async () => {
     // Detectar se é arquivo pelo dateKey
     const isArchive = gameState.dateKey.startsWith('archive-')
     const text = generateShareText(gameState, isArchive)
@@ -57,38 +62,30 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
     }
   }
 
+  const handleShareImage = async () => {
+    if (!shareCardRef.current) return
+
+    const fileName = SHARE_CONFIG.getFileName(gameState.mode, gameState.dayNumber)
+
+    await shareAsImage(shareCardRef, {
+      fileName,
+      title: `Meu resultado no ${gameState.mode.charAt(0).toUpperCase() + gameState.mode.slice(1)}`,
+      text: `Consegui ${gameState.isWin ? 'completar' : 'jogar'} o ${gameState.mode} do dia ${gameState.dayNumber}!`,
+      onSuccess: () => {
+        onShare?.() // Tocar som de compartilhamento
+      },
+      onError: (error) => {
+        console.error('Erro ao compartilhar imagem:', error)
+      },
+    })
+  }
+
   const maxValue = Math.max(...safeStats.guessDistribution, 1)
 
   const { containerVariants, itemVariants } = useDialogAnimations()
 
-  const minAttemps = () => {
-    switch (gameState.mode) {
-      case 'termo':
-        return {
-          first: 1,
-          second: 2,
-          third: 3,
-        }
-      case 'dueto':
-        return {
-          first: 2,
-          second: 3,
-          third: 4,
-        }
-      case 'quarteto':
-        return {
-          first: 4,
-          second: 5,
-          third: 6,
-        }
-      default:
-        return {
-          first: 1,
-          second: 2,
-          third: 3,
-        }
-    }
-  }
+  // Usar função centralizada do mode-config
+  const minAttempts = getMinAttempts(gameState.mode)
 
   return (
     <DialogShell
@@ -156,7 +153,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
                 <div className="space-y-1.5">
                   {safeStats.guessDistribution.map((count, index) => {
                     // Filtrar barras impossíveis baseado no modo
-                    const minPossibleAttempt = minAttemps().first
+                    const minPossibleAttempt = minAttempts.first
                     const attemptNumber = index + 1
 
                     // Não renderizar tentativas impossíveis
@@ -171,9 +168,9 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
 
                       const attemptNumber = idx + 1
 
-                      if (attemptNumber === minAttemps().first) return `🥇`
-                      if (attemptNumber === minAttemps().second) return `🥈`
-                      if (attemptNumber === minAttemps().third) return `🥉`
+                      if (attemptNumber === minAttempts.first) return '🥇'
+                      if (attemptNumber === minAttempts.second) return '🥈'
+                      if (attemptNumber === minAttempts.third) return '🥉'
                       return `${attemptNumber}`
                     }
 
@@ -202,23 +199,12 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
                       <div className="text-xs text-gray-400">Próxima Palavra</div>
                       <Countdown date={getNextMidnightTimestamp()} renderer={countdownRenderer} />
                     </div>
-                    <Button
-                      onClick={handleShare}
-                      className="bg-green-600 hover:bg-green-700"
-                      disabled={copied}
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          Copiado!
-                        </>
-                      ) : (
-                        <>
-                          <Share2 className="w-4 h-4 mr-2" />
-                          Compartilhar
-                        </>
-                      )}
-                    </Button>
+                    <ShareDropdown
+                      onShareText={handleShareText}
+                      onShareImage={handleShareImage}
+                      loading={sharingImage}
+                      copied={copied}
+                    />
                   </div>
                 </motion.div>
               )}
@@ -226,6 +212,11 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
           )}
         </AnimatePresence>
       </ResponsiveScrollArea>
+
+      {/* Card invisível para compartilhamento como imagem */}
+      <div className="sr-only absolute opacity-0 pointer-events-none" aria-hidden="true">
+        <ShareCard ref={shareCardRef} gameState={gameState} stats={stats} />
+      </div>
     </DialogShell>
   )
 }

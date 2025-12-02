@@ -1,5 +1,6 @@
 // src/game/storage.ts
-import { GameState, Settings, Stats } from './types'
+import { GameMode, GameState, Settings, Stats } from './types'
+import { getMaxAttempts } from './mode-config'
 
 const STORAGE_PREFIX = 'termo'
 
@@ -32,7 +33,7 @@ export const storage = {
     }
   },
 
-  getStats(mode: string): Stats {
+  getStats(mode: GameMode): Stats {
     try {
       const data = localStorage.getItem(`${STORAGE_PREFIX}:stats:${mode}`)
       if (data) {
@@ -41,7 +42,8 @@ export const storage = {
     } catch (e) {
       console.error('Error reading stats:', e)
     }
-    const maxAttempts = mode === 'termo' ? 6 : mode === 'dueto' ? 7 : 9
+    // Usar função centralizada do mode-config
+    const maxAttempts = getMaxAttempts(mode)
     return {
       gamesPlayed: 0,
       gamesWon: 0,
@@ -51,7 +53,7 @@ export const storage = {
     }
   },
 
-  saveStats(mode: string, stats: Stats): void {
+  saveStats(mode: GameMode, stats: Stats): void {
     try {
       localStorage.setItem(`${STORAGE_PREFIX}:stats:${mode}`, JSON.stringify(stats))
     } catch (e) {
@@ -59,7 +61,7 @@ export const storage = {
     }
   },
 
-  getGameState(mode: string, dateKey: string): GameState | null {
+  getGameState(mode: GameMode, dateKey: string): GameState | null {
     try {
       const data = localStorage.getItem(`${STORAGE_PREFIX}:state:${mode}:${dateKey}`)
       if (data) {
@@ -71,7 +73,7 @@ export const storage = {
     return null
   },
 
-  saveGameState(mode: string, dateKey: string, state: GameState): void {
+  saveGameState(mode: GameMode, dateKey: string, state: GameState): void {
     try {
       localStorage.setItem(
         `${STORAGE_PREFIX}:state:${mode}:${dateKey}`,
