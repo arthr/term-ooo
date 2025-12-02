@@ -11,7 +11,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [0.4.0] - 2024-12-02
 
-### Added
+---
 - Sistema de efeitos sonoros e memes durante o jogo
 - Hook `useSoundEffects` com cache e preload inteligente
 - Toggle "Efeitos Sonoros" no SettingsDialog
@@ -21,29 +21,29 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Cache de HTMLAudioElement para otimização de performance
 - Preload automático de sons críticos na inicialização
 
----
-
-## [0.3.0] - 2024-12-01
-
+- Sistema de efeitos sonoros e memes durante o jogo
+- Hook `useSoundEffects` com cache e preload inteligente
+- Toggle "Efeitos Sonoros" no SettingsDialog
+- 6 eventos de áudio configurados (vitória, derrota, compartilhar, etc)
 ### Added
 - Sistema de versionamento semântico
 - Badge de versão no canto inferior da aplicação
 - Documentação completa de versionamento em `.docs/VERSIONAMENTO_SEMANTICO.md`
 
-### Added
-- Sistema de dialogs responsivos (Dialog desktop / Sheet mobile)
-- Abertura automática de HelpDialog em modos não iniciados
-- Abertura automática de StatsDialog em jogos concluídos
+- Som "eu_e_vc_gostoso" na última tentativa do modo Quarteto
+- Campo `soundEnabled` em Settings (default: true)
+- Cache de HTMLAudioElement para otimização de performance
+- Preload automático de sons críticos na inicializaçãoos
 - Componente ResponsiveDialog para reuso
 - Componente ResponsiveScrollArea para scroll contextual
 
 ### Fixed
 - Distribuição de tentativas agora respeita mínimo por modo
-- Medalhas (🥇🥈🥉) corretamente posicionadas por modo de jogo
-- Performance de useEffect com dependências otimizadas
-- Barras impossíveis removidas da visualização
+### Added
+- Sistema de versionamento semântico
+- Badge de versão no canto inferior da aplicação
+- Documentação completa de versionamento em `.docs/VERSIONAMENTO_SEMANTICO.md`
 
-### Changed
 - Todos os dialogs migrados para sistema responsivo unificado
 - DialogShell refatorado para aceitar props flexíveis
 
