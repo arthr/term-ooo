@@ -38,6 +38,10 @@ function Game() {
 
   // Controlar se já mostramos HelpDialog para este gameState
   const helpDialogShownRef = useRef<string>('')
+  
+  // Controlar som de "waiting" após primeiro chute
+  const waitingTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const waitingSoundPlayedRef = useRef<string>('') // Guarda modo+dateKey para tocar apenas uma vez
 
   const { mode, customDayNumber } = useGameMode({ location, navigate })
 
@@ -106,6 +110,45 @@ function Game() {
       return () => clearTimeout(timer)
     }
   }, [gameState?.currentRow, gameState?.dateKey, mode, dialogManager.openDialog])
+
+  // Som de "waiting" após primeiro chute (15 segundos de inatividade)
+  useEffect(() => {
+    if (!gameState) return
+    
+    // Limpar timer anterior se existir
+    if (waitingTimerRef.current) {
+      clearTimeout(waitingTimerRef.current)
+      waitingTimerRef.current = null
+    }
+    
+    const stateKey = `${mode}-${gameState.dateKey}`
+    
+    // Condições para iniciar timer:
+    // 1. Acabou de dar o primeiro chute (currentRow === 1)
+    // 2. Ainda não tocou o som para este modo+dia
+    // 3. Jogo não acabou
+    if (
+      gameState.currentRow === 1 && 
+      waitingSoundPlayedRef.current !== stateKey &&
+      !gameState.isGameOver
+    ) {
+      waitingTimerRef.current = setTimeout(() => {
+        // Só tocar se ainda não deu o segundo chute
+        if (gameState.currentRow === 1 && !gameState.isGameOver) {
+          playSound('waiting')
+          waitingSoundPlayedRef.current = stateKey
+        }
+      }, 15000) // 15 segundos
+    }
+    
+    // Limpar timer quando mudar de linha (usuário deu o segundo chute)
+    return () => {
+      if (waitingTimerRef.current) {
+        clearTimeout(waitingTimerRef.current)
+        waitingTimerRef.current = null
+      }
+    }
+  }, [gameState?.currentRow, gameState?.dateKey, gameState?.isGameOver, mode, playSound])
 
   // Salvar configurações
   useEffect(() => {

@@ -8,6 +8,12 @@ export const SOUNDS_CONFIG: SoundConfig[] = [
     event: 'share',
     file: '/assets/sounds/share.mp3', // TODO: Criar sample de áudio
     volume: 0.7,
+    preload: false
+  },
+  {
+    event: 'waiting',
+    file: '/assets/sounds/os_cara_no_teto.mp3', // Odemetro: Ó os cara no teto!
+    volume: 0.5,
     preload: true
   },
   {
@@ -20,13 +26,13 @@ export const SOUNDS_CONFIG: SoundConfig[] = [
     event: 'gameOver',
     file: '/assets/sounds/game-over.mp3', // TODO: Criar sample de áudio
     volume: 0.8,
-    preload: true
+    preload: false
   },
   {
     event: 'firstTryWin',
     file: '/assets/sounds/first-try-win.mp3', // TODO: Criar sample de áudio
     volume: 0.9,
-    preload: true
+    preload: false
   },
   
   // Eventos secundários (lazy load)

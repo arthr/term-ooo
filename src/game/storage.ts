@@ -5,19 +5,23 @@ const STORAGE_PREFIX = 'termo'
 
 export const storage = {
   getSettings(): Settings {
-    try {
-      const data = localStorage.getItem(`${STORAGE_PREFIX}:settings`)
-      if (data) {
-        return JSON.parse(data)
-      }
-    } catch (e) {
-      console.error('Error reading settings:', e)
-    }
-    return {
+    const defaults: Settings = {
       highContrast: false,
       hardMode: false,
       soundEnabled: true,
     }
+
+    try {
+      const data = localStorage.getItem(`${STORAGE_PREFIX}:settings`)
+      if (data) {
+        const saved = JSON.parse(data)
+        // Merge: campos salvos sobrescrevem, mas novos campos pegam o default
+        return { ...defaults, ...saved }
+      }
+    } catch (e) {
+      console.error('Error reading settings:', e)
+    }
+    return defaults
   },
 
   saveSettings(settings: Settings): void {

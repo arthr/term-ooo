@@ -8,6 +8,7 @@ export type SoundEvent =
   | 'win'                // Ganhou (geral)
   | 'wrongWord'          // Palavra inválida
   | 'keyPress'           // Tecla pressionada (opcional)
+  | 'waiting'            // Aguardando resposta
 
 export interface SoundConfig {
   event: SoundEvent
