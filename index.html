@@ -37,6 +37,18 @@
   <meta name="twitter:description" content="Jogo diário de palavras em português com 3 modos. Inspirado em Wordle e Term.ooo. Grátis, sem cadastro!" />
   <meta name="twitter:image" content="https://jogo.work/og-image.png" />
   <meta name="twitter:creator" content="@arthrmrs" />
+  
+  <!-- Single Page Apps para GitHub Pages -->
+  <!-- Restaura a rota após redirecionamento do 404.html -->
+  <script>
+    (function() {
+      var redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect !== location.href) {
+        history.replaceState(null, null, redirect);
+      }
+    })();
+  </script>
 </head>
 
 <body>
