@@ -194,14 +194,26 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
 
               {gameState.isGameOver && (
                 <motion.div variants={itemVariants} className="border-t border-gray-700 pt-4 space-y-3">
+                  {/* Mensagem motivacional */}
+                  {gameState.isWin && (
+                    <motion.p 
+                      variants={itemVariants}
+                      className="text-center text-sm text-gray-400 px-2"
+                    >
+                      🎉 Curtiu? Compartilha seu resultado com seus amigos!
+                    </motion.p>
+                  )}
+                  
                   <div className="flex justify-between items-center">
                     <div>
                       <div className="text-xs text-gray-400">Próxima Palavra</div>
                       <Countdown date={getNextMidnightTimestamp()} renderer={countdownRenderer} />
                     </div>
                     <ShareDropdown
+                      gameState={gameState}
                       onShareText={handleShareText}
                       onShareImage={handleShareImage}
+                      onShare={onShare}
                       loading={sharingImage}
                       copied={copied}
                     />
