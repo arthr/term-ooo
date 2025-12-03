@@ -106,7 +106,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="space-y-4 py-4 pr-4"
+              className="space-y-4 py-4 pr-0"
             >
               {/* Solutions quando jogo terminou */}
               {gameState.isGameOver && (
@@ -200,7 +200,7 @@ export function StatsDialog({ open, onOpenChange, stats, gameState, onShare }: S
                       variants={itemVariants}
                       className="text-center text-sm text-gray-400 px-2"
                     >
-                      🎉 Curtiu? Compartilha seu resultado com seus amigos!
+                      🎉 Curtiu? Compartilha!
                     </motion.p>
                   )}
                   
