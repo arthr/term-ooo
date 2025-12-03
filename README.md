@@ -1,10 +1,10 @@
-# Term.ooo Clone
+# Jogo.Work - Term.ooo Clone
 
 [![Version](https://img.shields.io/badge/version-0.4.1-blue.svg)](https://github.com/arthr/term-ooo/releases/tag/v0.4.1)
 [![License](https://img.shields.io/badge/license-Educational-green.svg)](LICENSE)
 [![Deploy](https://github.com/arthr/term-ooo/actions/workflows/deploy.yml/badge.svg)](https://github.com/arthr/term-ooo/actions)
 
-Clone completo e funcional do jogo [Term.ooo](https://term.ooo), desenvolvido com React, TypeScript e Tailwind CSS.
+Jogo.Work é um clone completo e funcional do jogo [Term.ooo](https://term.ooo), desenvolvido com React, TypeScript e Tailwind CSS.
 
 🌐 **[Jogue agora no GitHub Pages!](https://arthr.github.io/term-ooo/)** 🎮
 

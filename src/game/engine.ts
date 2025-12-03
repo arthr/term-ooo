@@ -306,5 +306,8 @@ export function generateShareText(state: GameState, isArchive: boolean = false):
     text += renderBoardPair(boards, 2, 3, maxAttempts)
   }
 
+  // Adicionar URL no final
+  text += '\n\n🎮 Jogue também: https://jogo.work'
+
   return text
 }
